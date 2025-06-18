@@ -1,0 +1,153 @@
+﻿@model PaginatedList<BookKeepingWeb.Models.UploadContent>
+@using BookKeepingWeb.Helpers
+
+<link rel="stylesheet" href="~/css/search.css" />
+<style>
+    html {
+        scroll-behavior: auto !important;
+    }
+</style>
+<div class="text-center">
+    <br />
+    <h1 class="display-4">Search Results</h1>
+</div>
+
+<div class="container mt-3">
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning text-center">
+            No results found for your search.
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-4 g-3">
+            @foreach (var content in Model)
+            {
+                <div class="col">
+                    <div class="card mb-4 clickable-content h-100"
+                         onclick="saveScrollAndNavigate('@Url.Action("Details", "Home", new { id = content.Id })')"
+                         style="cursor: pointer;">
+                        <div class="media-container">
+                            @switch (content.ContentType)
+                            {
+                                case FileType.Image or FileType.Gif:
+                                    <img src="@content.ThumbnailPath" class="card-img-top" alt="@content.Title" loading="lazy"
+                                         style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                    break;
+                                case FileType.Video:
+                                    <img src="@content.ThumbnailPath" class="card-img-top"
+                                         alt="@content.Title"
+                                         loading="lazy"
+                                         style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                    <div class="play-button"></div>
+                                    break;
+                            }
+                        </div>
+                        <div class="card-body text-center d-flex flex-column h-100">
+                            <h5 class="card-title">@content.Title</h5>
+                            <p class="text-muted mt-auto"><small>Uploaded on: @content.CreatedDateTime.ToShortDateString()</small></p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+            @if (Convert.ToInt32(ViewData["TotalPages"]) > 1)
+            {
+                int currentPage = Convert.ToInt32(ViewData["CurrentPage"] ?? 1);
+                int totalPages = Convert.ToInt32(ViewData["TotalPages"] ?? 1);
+
+                @if (currentPage > 1)
+                {
+                    <a class="btn btn-primary me-2"
+                       asp-action="SearchAsync"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-search="@ViewData["Search"]">
+                        «
+                    </a>
+                }
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    if (i == currentPage)
+                    {
+                        <a class="btn btn-primary me-1"
+                           asp-action="SearchAsync"
+                           asp-route-page="@i"
+                           asp-route-search="@ViewData["Search"]">
+                            @i
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-primary me-1"
+                           asp-action="SearchAsync"
+                           asp-route-page="@i"
+                           asp-route-search="@ViewData["Search"]">
+                            @i
+                        </a>
+                    }
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <a class="btn btn-primary ms-2"
+                       asp-action="SearchAsync"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-search="@ViewData["Search"]">
+                        »
+                    </a>
+                }
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let lazyImages = document.querySelectorAll("img.lazy-load");
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            let img = entry.target;
+                            img.src = img.dataset.src;
+                            img.removeAttribute("loading"); // Remove native lazy loading after loading
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(img => {
+                    observer.observe(img);
+                });
+            }
+        });
+    </script>
+    <script>
+        // Disable browser's default scroll restoration
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Function to save scroll position and navigate
+        function saveScrollAndNavigate(url) {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
+            window.location.href = url;
+        }
+
+        // Restore scroll position immediately
+        (function () {
+            const scrollPosition = sessionStorage.getItem('scrollPosition');
+            if (scrollPosition !== null) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                sessionStorage.removeItem('scrollPosition');
+            }
+        })();
+    </script>
+}

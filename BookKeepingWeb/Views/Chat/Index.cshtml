@@ -1,0 +1,180 @@
+﻿<link rel="stylesheet" href="~/css/livechat.css" />
+<div id="chat-container">
+    <br />
+    <br />
+    <br />
+    <!-- Chat Header -->
+    <div id="chat-header">
+        <h2>Post-Nut Clarity Sesh</h2>
+        <p>Welcome, <span id="chat-username">@ViewData["Username"]</span>!</p>
+    </div>
+
+    <!-- Chat Messages Section -->
+    <div id="chat-messages">
+        <ul id="discussion"></ul>
+    </div>
+
+    <!-- Chat Input Section -->
+    <div id="chat-input">
+        <div id="emoji-dropdown" style="display: none;"></div>
+        <button id="emoji-button">😀</button>
+        <input id="displayname" type="hidden" value="@ViewData["Username"]" />
+        <input id="message" type="text" placeholder="Type a message..." />
+        <button id="sendmessage">Send</button>
+    </div>
+</div>
+
+<!-- Load the SignalR library -->
+<script src="/lib/signalr.min.js"></script>
+
+<script>
+    // SignalR Connection Setup
+    var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+
+    // Get the username from the hidden input
+    var username = document.getElementById("displayname").value;
+
+    // If the username is "Anonymous", assign a random number
+    if (username === "Anonymous") {
+        username += `[${Math.floor(Math.random() * 10000)}]`;
+    }
+
+    // Start the connection
+    connection.start().then(async () => {
+        // Fetch previous messages from the server
+        connection.invoke("LoadMessages").then(messages => {
+            messages.forEach(msg => {
+                const li = document.createElement("li");
+                li.textContent = `${msg.User}: ${msg.Message}`;
+                document.getElementById("discussion").appendChild(li);
+            });
+
+            // Scroll to the bottom after loading messages
+            scrollToBottom();
+        }).catch(err => console.error(err.toString()));
+    }).catch(err => console.error(err.toString()));
+
+    // Function to send a message
+    function sendMessage() {
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value.trim();
+
+        // Define the max character count
+        const maxCharCount = 300;
+
+        // Check for character limit
+        if (message.length > maxCharCount) {
+            alert(`Message cannot exceed ${maxCharCount} characters.`);
+            return;
+        }
+
+        if (message === "") return; // Do nothing if the input is empty
+
+        // Invoke the SendMessage method on the server
+        connection.invoke("SendMessage", username, message).catch(function (err) {
+            console.error(err.toString());
+        });
+
+        // Clear the input box
+        messageInput.value = "";
+    }
+
+    // Event listener for the send button
+    document.getElementById("sendmessage").addEventListener("click", function (event) {
+        sendMessage();
+        event.preventDefault();
+    });
+
+    // Event listener for the "Enter" key
+    document.getElementById("message").addEventListener("keydown", function (event) {
+        if (event.key === "Enter") {
+            sendMessage();
+            event.preventDefault();
+        }
+    });
+
+    // Automatically scroll to the bottom of the chat
+    function scrollToBottom() {
+        var chatBox = document.getElementById("chat-messages");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Event listener for receiving messages
+    connection.on("ReceiveMessage", function (user, message) {
+        var encodedMsg = user + ": " + message;
+        var li = document.createElement("li");
+
+        li.textContent = encodedMsg;
+        document.getElementById("discussion").appendChild(li);
+
+        // Scroll to the bottom when a new message is added
+        scrollToBottom();
+    });
+
+    // Emoji Picker Logic
+        const emojiButton = document.getElementById("emoji-button");
+    const emojiDropdown = document.getElementById("emoji-dropdown");
+    const messageInput = document.getElementById("message");
+
+    // Fetch emojis from the JSON file
+    async function loadEmojis() {
+        try {
+            const response = await fetch("/lib/emojis.json");
+            const data = await response.json();
+
+            // Populate emojis into categories
+            for (const [category, emojis] of Object.entries(data)) {
+                const categoryDiv = document.createElement("div");
+                categoryDiv.classList.add("emoji-category");
+
+                const categoryTitle = document.createElement("strong");
+                categoryTitle.textContent = category;
+
+                const emojiRow = document.createElement("div");
+                emojiRow.classList.add("emoji-row");
+
+                emojis.forEach((emoji) => {
+                    const emojiSpan = document.createElement("span");
+                    emojiSpan.textContent = emoji;
+                    emojiRow.appendChild(emojiSpan);
+                });
+
+                categoryDiv.appendChild(categoryTitle);
+                categoryDiv.appendChild(emojiRow);
+                emojiDropdown.appendChild(categoryDiv);
+            }
+        } catch (error) {
+            console.error("Failed to load emojis:", error);
+        }
+    }
+
+    // Show/hide emoji dropdown as a drop-up
+    emojiButton.addEventListener("click", () => {
+        if (emojiDropdown.style.display === "block") {
+            emojiDropdown.style.display = "none";
+        } else {
+            emojiDropdown.style.display = "block";
+            const rect = emojiButton.getBoundingClientRect();
+            emojiDropdown.style.bottom = `${window.innerHeight - rect.top + 10}px`;
+            emojiDropdown.style.left = `${rect.left}px`;
+        }
+    });
+
+    // Append selected emoji to the input field
+    emojiDropdown.addEventListener("click", (event) => {
+        if (event.target.tagName === "SPAN") {
+            messageInput.value += event.target.textContent.trim();
+        }
+        emojiDropdown.style.display = "none";
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener("click", (event) => {
+        if (!emojiButton.contains(event.target) && !emojiDropdown.contains(event.target)) {
+            emojiDropdown.style.display = "none";
+        }
+    });
+
+    // Load emojis on page load
+    loadEmojis();
+</script>

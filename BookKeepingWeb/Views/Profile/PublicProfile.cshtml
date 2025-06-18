@@ -1,0 +1,126 @@
+﻿@model UserProfile
+@using BookKeepingWeb.Helpers
+
+<link rel="stylesheet" href="~/css/profileDisplay.css" />
+
+<div id="profile-container">
+    @if (TempData["ProfileError"] != null)
+    {
+        <div class="alert alert-danger text-center">@TempData["ProfileError"]</div>
+    }
+    <!-- Banner Section -->
+    <div class="profile-banner" style="background-image: url('@Model.BackgroundImagePath');">
+        <!-- Overlay content -->
+        <div class="profile-overlay">
+            <!-- Profile Picture Section -->
+            <div class="profile-picture-container">
+                <img src="@Model.ProfilePicturePath" alt="Profile Picture" class="profile-picture rounded-circle" />
+            </div>
+            <!-- Profile Info Section -->
+            <div class="profile-info-container">
+                <div class="profile-details">
+                    <h2>@Model.ScreenName</h2>
+                    <h4>Country: @Model.Country</h4>
+                    <h4>Age: @Model.Age</h4>
+                    <p><strong>Description:</strong> @Html.Raw(Model.Description != null ? Model.Description.Replace("\n", "<br>") : "")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Content Section -->
+<div class="mt-3">
+    <!-- Reduced mt-5 to mt-3 for mobile -->
+    <h3>@Model.ScreenName's Content</h3>
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-4 g-3">
+            <!-- Responsive columns -->
+            @if (ViewData["UserContent"] is PaginatedList<BookKeepingWeb.Models.UploadContent> paginatedContent && paginatedContent.Any())
+            {
+                @foreach (var content in paginatedContent)
+                {
+                    <div class="col">
+                        <div class="card mb-4 clickable-content h-100"
+                             onclick="window.location.href='@Url.Action("Details", "Home", new { id = content.Id })'"
+                             style="cursor: pointer;">
+                            <div class="media-container">
+                                @switch (content.ContentType)
+                                {
+                                    case FileType.Image or FileType.Gif:
+                                        <img src="@content.ThumbnailPath" class="card-img-top" alt="@content.Title" loading="lazy"
+                                             style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                        break;
+                                    case FileType.Video:
+                                        <img src="@content.ThumbnailPath" class="card-img-top"
+                                             alt="@content.Title"
+                                             loading="lazy"
+                                             style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                        <div class="play-button"></div>
+                                        break;
+                                }
+                            </div>
+                            <div class="card-body text-center d-flex flex-column h-100">
+                                <h5 class="card-title">@content.Title</h5>
+                                <p class="text-muted mt-auto"><small>Uploaded on: @content.CreatedDateTime.ToShortDateString()</small></p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-center">No content uploaded yet.</p>
+            }
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-center mt-4">
+            @if (Convert.ToInt32(ViewData["CurrentPage"]) > 1)
+            {
+                <a class="btn btn-primary me-2"
+                   asp-action="PublicProfile"
+                   asp-route-page="@(Convert.ToInt32(ViewData["CurrentPage"]) - 1)"
+                   asp-route-userId="@Model.UserId">
+                    Previous
+                </a>
+            }
+
+            @if (Convert.ToInt32(ViewData["CurrentPage"]) < Convert.ToInt32(ViewData["TotalPages"]))
+            {
+                <a class="btn btn-primary"
+                   asp-action="PublicProfile"
+                   asp-route-page="@(Convert.ToInt32(ViewData["CurrentPage"]) + 1)"
+                   asp-route-userId="@Model.UserId">
+                    Next
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let lazyImages = document.querySelectorAll("img.lazy-load");
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            let img = entry.target;
+                            img.src = img.dataset.src;
+                            img.removeAttribute("loading"); // Remove native lazy loading after loading
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(img => {
+                    observer.observe(img);
+                });
+            }
+        });
+    </script>
+}

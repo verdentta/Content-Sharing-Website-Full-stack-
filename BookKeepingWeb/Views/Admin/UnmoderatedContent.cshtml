@@ -1,0 +1,79 @@
+﻿@model List<BookKeepingWeb.Models.UploadContent>
+<style>
+    * {
+        color: white;
+    }
+    body {
+        background-color: #000000; /* Pure black background */
+        font-family: 'Roboto', sans-serif;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal; /* Ensures text flows naturally */
+        max-width: 200px; /* Optional: Prevents excessive widening */
+    }
+
+</style>
+<br />
+<div class="container d-flex justify-content-between align-items-center">
+    <h2 class="text-primary">Unmoderated Content</h2>
+    <a asp-action="Index" asp-controller="Admin" class="btn btn-secondary">
+        ⬅️ Back to Admin Panel
+    </a>
+</div>
+
+@if (TempData["AdminError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["AdminError"]</div>
+}
+
+
+<br />
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Upload Date</th>
+                <th>Author ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var content in Model)
+            {
+                <tr>
+                    <td><a href="@Url.Action("Details", "Home", new { id = content.Id })" target="_blank">@content.Title</a></td>
+                    <td>@content.CreatedDateTime.ToString("yyyy-MM-dd")</td>
+                    <td>@content.UserId</td>
+                    <td>
+                        <form asp-action="MarkAsModerated" asp-controller="Admin" method="post" class="d-inline">
+                            <input type="hidden" name="contentId" value="@content.Id" />
+                            <button type="submit" class="btn btn-success">Mark as Moderated</button>
+                        </form>
+                    <form asp-action="DeleteUnmoderatedContent" asp-controller="Admin" method="post" class="d-inline">
+                        <input type="hidden" name="contentId" value="@content.Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-3">
+        @if (ViewBag.TotalPages > 1)
+        {
+            <ul class="pagination">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("UnmoderatedContent", new { page = i })">@i</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>

@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Too Many Requests";
+    Layout = null;
+}
+<link rel="stylesheet" href="~/css/banned.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Too Many Requests</title>
+</head>
+<body>
+    <h1>🚫 SLOW DOWN 🚫</h1>
+    <h2>Our system detected excessive activity from your account or device.</h2>
+
+    <p class="reason">
+        To protect this platform from abuse, spam, or automated bots, we limit how frequently actions like commenting, uploading, and reporting can occur.
+    </p>
+
+    <p class="reason">
+        If you're seeing this message often, take a short break and try again later.
+    </p>
+
+    @if (TempData["RateLimitReason"] != null)
+    {
+        <p class="reason"><strong>Reason:</strong> @TempData["RateLimitReason"]</p>
+    }
+
+    <br />
+    <a class="btn-home" href="@Url.Action("HomePage", "Home")">Return to Safety</a>
+</body>
+</html>

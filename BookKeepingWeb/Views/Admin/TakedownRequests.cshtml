@@ -1,0 +1,167 @@
+﻿@model IEnumerable<BookKeepingWeb.Models.TakedownRequestModel>
+@{
+    ViewData["Title"] = "Takedown Requests";
+}
+<style>
+    /* Modern Styled Tabs */
+    .nav-tabs {
+        border-bottom: 2px solid #dee2e6;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal; /* Ensures text flows naturally */
+        max-width: 200px; /* Optional: Prevents excessive widening */
+    }
+
+
+
+    * {
+        color: white;
+    }
+    
+    body {
+        background-color: #000000; /* Pure black background */
+        font-family: 'Roboto', sans-serif;
+    }
+
+
+        .nav-tabs .nav-link {
+            color: #495057;
+            background: #f8f9fa;
+            border-radius: 50px;
+            padding: 10px 18px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+            /* Active Tab - Smooth Gradient Look */
+            .nav-tabs .nav-link.active {
+                color: white !important;
+                font-weight: bold;
+                transform: translateY(-2px);
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+            }
+
+            /* Unique Colors for Tabs */
+            .nav-tabs .nav-link[href*='tab=all'].active {
+                background: linear-gradient(135deg, #007bff, #0056b3); /* Blue Gradient */
+            }
+
+            .nav-tabs .nav-link[href*='tab=not-reviewed'].active {
+                background: linear-gradient(135deg, #dc3545, #a71d2a); /* Red Gradient */
+            }
+
+            .nav-tabs .nav-link[href*='tab=reviewed'].active {
+                background: linear-gradient(135deg, #28a745, #1d682f); /* Green Gradient */
+            }
+
+            /* Hover Effect */
+            .nav-tabs .nav-link:hover {
+                background: #e9ecef;
+                transform: translateY(-1px);
+            }
+
+
+
+</style>
+<br>
+
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Takedown Requests</h2>
+
+    @if (TempData["AdminError"] != null)
+    {
+        <div class="alert alert-danger text-center">@TempData["AdminError"]</div>
+    }
+    
+    <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">⬅ Back to Admin Panel</a>
+</div>
+
+<!-- Tabs for Filtering -->
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.ActiveTab == "not-reviewed" ? "active" : "")"
+           href="@Url.Action("TakedownRequests", new { tab = "not-reviewed" })">
+            🚨 Not Reviewed
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewBag.ActiveTab == "reviewed" ? "active" : "")"
+           href="@Url.Action("TakedownRequests", new { tab = "reviewed" })">
+            ✅ Reviewed
+        </a>
+    </li>
+</ul>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Description</th>
+            <th>Post ID</th>
+            @if (ViewBag.ActiveTab != "reviewed")
+            {
+                <th>Reviewed</th> <!-- Hide in Reviewed tab -->
+            }
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+            <tr>
+                <td>@request.Email</td>
+                <td>@request.Description</td>
+                <td>
+                    <a href="@Url.Action("Details", "Home", new { id = request.PostId })" target="_blank">@request.PostId</a>
+                </td>
+                @if (ViewBag.ActiveTab != "reviewed")
+                {
+                    <td>@request.Reviewed</td> <!-- Hide in Reviewed tab -->
+                }
+                <td>
+                    @if (ViewBag.ActiveTab != "reviewed")
+                    {
+                        <form method="post" asp-action="ResolveRequest" asp-route-id="@request.Id" asp-route-tab="@ViewBag.ActiveTab" class="d-inline">
+                            <button type="submit" class="btn btn-success">Resolve</button>
+                        </form>
+                        <form method="post" asp-action="DenyRequest" asp-route-id="@request.Id" asp-route-tab="@ViewBag.ActiveTab" class="d-inline">
+                            <button type="submit" class="btn btn-danger">
+                                @(ViewBag.ActiveTab == "reviewed" ? "Delete" : "Deny")
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <!-- ✅ Call DeleteRequest instead of DenyRequest -->
+                        <form method="post" asp-action="DeleteRequest" asp-route-id="@request.Id" asp-route-tab="@ViewBag.ActiveTab" class="d-inline">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <ul class="pagination">
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("TakedownRequests", new { tab = ViewBag.ActiveTab, page = i })">@i</a>
+            </li>
+        }
+    </ul>
+}

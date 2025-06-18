@@ -1,0 +1,82 @@
+﻿@model List<Microsoft.AspNetCore.Identity.IdentityUser>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<style>
+    * {
+        color: white;
+    }
+    body {
+        background-color: #000000; /* Pure black background */
+        font-family: 'Roboto', sans-serif;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal; /* Ensures text flows naturally */
+        max-width: 200px; /* Optional: Prevents excessive widening */
+    }
+
+</style>
+<br>
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Manage Users</h2>
+    @if (TempData["AdminSuccess"] != null)
+    {
+        <div class="alert alert-success text-center mt-3">@TempData["AdminSuccess"]</div>
+    }
+    @if (TempData["AdminError"] != null)
+    {
+        <div class="alert alert-danger text-center mt-3">@TempData["AdminError"]</div>
+    }
+    <!-- 🔙 Back to Admin Panel Button -->
+    <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">⬅ Back to Admin Panel</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>User ID</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>
+                    <a href="@Url.Action("PublicProfile", "Profile", new { userId = user.Id })" target="_blank">
+                        @user.Id
+                    </a>
+                </td>
+                <td>
+                    <form asp-action="BanUser" asp-route-userId="@user.Id" method="post"
+                          onsubmit="return confirm('Are you sure you want to ban this user?');">
+                        <button type="submit" class="btn btn-danger">🚫 Ban</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("ViewAllUsers", new { page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

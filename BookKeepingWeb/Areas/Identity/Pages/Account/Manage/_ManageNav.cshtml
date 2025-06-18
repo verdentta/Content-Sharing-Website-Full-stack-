@@ -1,0 +1,58 @@
+﻿@inject SignInManager<IdentityUser> SignInManager
+@{
+    var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+}
+<style>
+    /* Global Dark Theme Styling */
+    body {
+        background-color: #000000; /* Pure black background */
+        color: #f8f9fa; /* Light grey text */
+        font-family: 'Roboto', sans-serif;
+    }
+
+    /* Navigation Menu Styling */
+    .nav-pills {
+        background-color: #111; /* Dark background for the sidebar */
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(255, 71, 71, 0.3);
+    }
+
+        .nav-pills .nav-item {
+            margin-bottom: 8px; /* Add spacing between items */
+        }
+
+        .nav-pills .nav-link {
+            color: #ffffff !important; /* White text */
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: #222; /* Dark gray background */
+            transition: all 0.3s ease-in-out;
+        }
+
+            /* Active Link Styling */
+            .nav-pills .nav-link.active,
+            .nav-pills .nav-link:hover {
+                background-color: #ff4747 !important; /* Red highlight */
+                color: #ffffff !important;
+                box-shadow: 0px 0px 10px rgba(255, 71, 71, 0.6);
+            }
+
+    /* External Logins Styling */
+    #external-logins {
+        margin-top: 10px;
+    }
+</style>
+<ul class="nav nav-pills flex-column">
+    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Password</a></li>
+    @if (hasExternalLogins)
+    {
+        <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>
+    }
+   
+    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Personal data</a></li>
+</ul>

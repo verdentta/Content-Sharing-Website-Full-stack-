@@ -1,0 +1,23 @@
+﻿@model IEnumerable<BookKeepingWeb.Models.ForumThread>
+
+@{
+    ViewData["Title"] = "Forums";
+}
+
+<link rel="stylesheet" href="~/css/forumindex.css" />
+<br />
+<div class="forum-container">
+    <h2>📢 Forums</h2>
+
+    <ul class="thread-list">
+        @foreach (var thread in Model)
+        {
+            <a asp-action="DetailedThread" asp-route-id="@thread.Id" class="thread-link">
+            <li class="thread-list-item">
+                <span class="thread-title">@thread.Title</span>
+                <p class="thread-meta">Created by: <strong>@(thread.CreatedByUser?.ScreenName ?? "Unknown")</strong> | @thread.CreatedDate.ToShortDateString()</p>
+            </li>
+            </a>
+        }
+    </ul>
+</div>

@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+    Layout = null;
+}
+<link rel="stylesheet" href="~/css/banned.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Access Denied</title>
+</head>
+<body>
+    <h1>⛔ ACCESS DENIED ⛔</h1>
+    <h2>You do not have permission to access this resource or perform this action.</h2>
+
+    @if (TempData["AccessReason"] != null)
+    {
+        <p class="reason"><strong>Reason:</strong> @TempData["AccessReason"]</p>
+    }
+    <br />
+    <a class="btn-home" href="@Url.Action("HomePage", "Home")">Return to Safety</a>
+</body>
+</html>

@@ -1,0 +1,488 @@
+﻿@using System.Text.RegularExpressions
+
+@section Head {
+    <title>@Model.Title - HubXX AI</title>
+    @{
+        var rawDesc = Model.Description ?? "";
+        var cleanDesc = Regex.Replace(rawDesc, "<.*?>", ""); // Remove HTML tags
+        var seoDesc = cleanDesc.Length > 150 ? cleanDesc.Substring(0, 150) : cleanDesc;
+    }
+    <meta name="description" content="@seoDesc" />
+    <meta property="og:title" content="@Model.Title" />
+    <meta property="og:description" content="@seoDesc" />
+    <meta property="og:image" content="@Model.ThumbnailPath" />
+    <meta property="og:url" content="@Url.Action("Details", "Home", new { id = Model.Id, slug = Model.Slug }, Context.Request.Scheme)" />
+    <meta name="robots" content="index, follow" />
+    <meta name="twitter:title" content="@Model.Title" />
+    <meta name="twitter:description" content="@seoDesc" />
+    <meta name="twitter:image" content="@Model.ThumbnailPath" />
+}
+
+<link rel="stylesheet" href="~/css/details.css" />
+
+<div class="container mt-3">
+    <!-- Reduced mt-5 to mt-3 for mobile -->
+    <div class="card mx-auto" style="box-shadow: 0 4px 8px rgba(0,0,0,0.2); border-radius: 10px;">
+        <div id="fixedCarouselContainer" style="position: relative; display: flex; justify-content: center; align-items: center; background-color: transparent; overflow: hidden;">
+            @if (Model.ContentType == FileType.Image || Model.ContentType == FileType.Gif)
+            {
+                <img src="@Model.ContentPath" alt="@Model.Title" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+            }
+            else if (Model.ContentType == FileType.Video)
+            {
+                <video id="mainVideo" controls controlsList="nodownload" preload="none" poster="@Model.ThumbnailPath" style="max-height: 100%; max-width: 100%; object-fit: contain;" loop>
+                    <source src="@Url.Action("Stream", "Home", new { id = Model.Id })" type="video/mp4" />
+                </video>
+            }
+        </div>
+
+        <div class="card-body text-center">
+            <h3 class="card-title">@Model.Title</h3>
+            <div class="d-flex flex-md-row align-items-center justify-content-between gap-2 button-group">
+                <!-- Removed flex-column -->
+                <button id="like-button"
+                        class="btn @((bool)ViewBag.IsLikedByUser ? "btn-primary" : "btn-outline-primary")"
+                        data-content-id="@Model.Id">
+                    👍 @((bool)ViewBag.IsLikedByUser ? "Liked" : "Like") (<span id="like-count">@Model.Likes</span>)
+                </button>
+
+                <button id="share-button"
+                        class="btn btn-outline-secondary"
+                        onclick="copyLinkToClipboard('@Model.Id', '@Model.Slug')">
+                    🔗
+                </button>
+
+                <button id="comment-button" class="btn btn-outline-info" onclick="scrollToCommentBox()">
+                    💬
+                </button>
+
+                <button type="button" class="btn btn-warning flag-button" data-bs-toggle="modal" data-bs-target="#takedownModal">
+                    🚩
+                </button>
+            </div>
+            <hr />
+        </div>
+        <!-- Metadata Box -->
+        <div class="metadata-box">
+            <div class="d-flex flex-wrap justify-content-between align-items-center text-center">
+
+                <!-- Posted by -->
+                <div class="d-flex align-items-center gap-2">
+                    <strong>✍️ Posted by:</strong>
+                    <a asp-controller="Profile" asp-action="PublicProfile" asp-route-userId="@Model.UserId" class="author-link d-flex align-items-center">
+                        <img src="@ViewBag.AuthorProfilePicture" alt="Profile Picture" class="author-profile-pic">
+                        <span>@ViewBag.Author</span>
+                    </a>
+                </div>
+
+                <!-- Uploaded Date -->
+                <div class="d-flex align-items-center gap-2">
+                    <strong>📅 Uploaded On:</strong> <span>@Model.CreatedDateTime.ToShortDateString()</span>
+                </div>
+
+                <!-- Views -->
+                <div class="d-flex align-items-center gap-2">
+                    <strong>👁 Views:</strong> <span>@Model.Views</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="description-box mt-3">
+                <p>@Html.Raw(Model.Description.Replace("\n", "<br>"))</p>
+            </div>
+        </div>
+
+        <!-- Tags Section -->
+        <div class="tags-container">
+            @if (Model.Tags == null || Model.Tags.Count == 0)
+            {
+                <p>No tags for this post</p>
+            }
+            else
+            {
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="tag-item">@tag.Name</span>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Related Content Section -->
+        @if (ViewBag.RelatedContent != null && ((List<UploadContent>)ViewBag.RelatedContent).Count > 0)
+        {
+            <div class="related-content">
+                <h4 class="related-content-header">Related Content</h4>
+                <div class="container mt-3">
+                    <div class="row row-cols-1 row-cols-md-4 g-3">
+                        @foreach (var content in ViewBag.RelatedContent)
+                        {
+                            <div class="col">
+                                <a href="@Url.Action("Details", "Home", new { id = content.Id, slug = content.Slug })" class="text-decoration-none">
+                                    <div class="related-card related-clickable-content h-100"
+                                         onclick="saveScrollAndNavigate('@Url.Action("Details", "Home", new { id = content.Id, slug = content.Slug })')">
+                                        <div class="related-media-container">
+                                            @switch (content.ContentType)
+                                            {
+                                                case FileType.Image or FileType.Gif:
+                                                    <img src="@content.ThumbnailPath" class="related-card-img-top" alt="@content.Title" loading="lazy" />
+                                                    break;
+                                                case FileType.Video:
+                                                    <img src="@content.ThumbnailPath" class="related-card-img-top"
+                                                         alt="@content.Title"
+                                                         loading="lazy"
+                                                         style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                                    <div class="related-play-button"></div>
+                                                    break;
+                                            }
+                                        </div>
+                                        <div class="related-card-body text-center d-flex flex-column h-100">
+                                            <h5 class="related-card-title">@content.Title</h5>
+                                            <p class="related-text-muted mt-auto"><small>Uploaded on: @content.CreatedDateTime.ToShortDateString()</small></p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else if (ViewBag.PopularContent != null && ((List<UploadContent>)ViewBag.PopularContent).Count > 0)
+        {
+            <div class="related-content">
+                <h4 class="related-content-header">Popular Content</h4>
+                <div class="container mt-3">
+                    <div class="row row-cols-1 row-cols-md-4 g-3">
+                        @foreach (var content in ViewBag.PopularContent)
+                        {
+                            <div class="col">
+                                <a href="@Url.Action("Details", "Home", new { id = content.Id })" class="text-decoration-none">
+                                    <div class="related-card related-clickable-content h-100"
+                                         onclick="saveScrollAndNavigate('@Url.Action("Details", "Home", new { id = content.Id })')">
+                                        <div class="related-media-container">
+                                            @switch (content.ContentType)
+                                            {
+                                                case FileType.Image or FileType.Gif:
+                                                    <img src="@content.ThumbnailPath" class="related-card-img-top" alt="@content.Title" loading="lazy" />
+                                                    break;
+                                                case FileType.Video:
+                                                    <img src="@content.ThumbnailPath" class="related-card-img-top"
+                                                         alt="@content.Title"
+                                                         loading="lazy"
+                                                         style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                                    <div class="related-play-button"></div>
+                                                    break;
+                                                    
+                                            }
+                                        </div>
+                                        <div class="related-card-body text-center d-flex flex-column h-100">
+                                            <h5 class="related-card-title">@content.Title</h5>
+                                            <p class="related-text-muted mt-auto"><small>Uploaded on: @content.CreatedDateTime.ToShortDateString()</small></p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="related-section-empty text-center">
+                <h4 class="related-content-header">No Related or Popular Content Available</h4>
+                <p class="no-content-message">Looks like there's nothing here yet. Check back later!</p>
+            </div>
+        }
+
+        <!-- Report Comment Modal -->
+        <div class="modal fade" id="commentReportModal" tabindex="-1" aria-labelledby="commentReportModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form id="commentReportForm">
+                            @Html.AntiForgeryToken()
+                            <h4>Report Comment</h4>
+                            <p>Select a reason for reporting this comment:</p>
+                            <select id="reportReason" class="form-select">
+                                <option value="">-- Select Reason --</option>
+                                <option value="Spam">Spam</option>
+                                <option value="Hate Speech">Hate Speech</option>
+                                <option value="Harassment">Harassment</option>
+                                <option value="Illegal Content">Illegal Content</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <textarea id="reportDetails" oninput="updateReportCount()" maxlength="150" class="form-control mt-2" placeholder="Optional: Provide more details"></textarea>
+                            <small id="ReportCounter" class="text-muted">0 / 150 characters</small>
+                            <small id="reportDescriptionError" class="text-danger" style="display: none;">⚠️ Please select a reason.</small>
+                            <input type="hidden" id="reportCommentId" />
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" id="submitCommentReport">Submit Report</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Comment Section -->
+        <div class="card-body">
+            <h5>Comments</h5>
+            <div id="comments-container" style="max-height: 200px; overflow-y: auto; border: 1px solid #6b4ca2; border-radius: 5px; padding: 10px;">
+                @if (Model.Comments == null || Model.Comments.Count == 0)
+                {
+                    <p id="no-comments-placeholder">No comments yet. Be the first to comment!</p>
+                    <ul class="list-group" id="comments-list" style="display: none;"></ul>
+                }
+                else
+                {
+                    <ul class="list-group" id="comments-list">
+                        @foreach (var comment in Model.Comments)
+                        {
+                            <li class="list-group-item">
+                                <strong>
+                                    <a asp-controller="Profile" asp-action="PublicProfile" asp-route-userId="@comment.UserId">
+                                        @comment.User.ScreenName
+                                    </a>
+                                </strong>
+                                <span class="comment-text">@comment.Content</span>
+                                <span class="text-muted" style="font-size: 0.9rem;">(@comment.Date.ToShortDateString())</span>
+                                <button class="btn btn-link btn-sm reply-button" data-username="@comment.User.ScreenName">Reply</button>
+
+                                <!-- Report Button: Visible to Everyone -->
+                                <button class="btn btn-danger btn-sm report-comment-button"
+                                        data-comment-id="@comment.Id"
+                                        data-comment-text="@comment.Content"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#commentReportModal">
+                                    🚩
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+            <hr />
+            <h6>Add a Comment</h6>
+            <form id="add-comment-form" method="post" asp-action="AddComment">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="uploadContentId" value="@Model.Id" />
+                <div class="form-group">
+                    <textarea class="form-control" maxlength="500" id="CommentInput" oninput="updateCommentCount()" name="commentContent" rows="2" placeholder="Write a comment..." required></textarea>
+                    <small id="CommentCounter" class="text-muted">0 / 500 characters</small>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Post Comment</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Takedown Request Modal -->
+<div class="modal fade" id="takedownModal" tabindex="-1" aria-labelledby="takedownModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="takedownRequestForm">
+                    @Html.AntiForgeryToken()
+                    <h2>Fill out the form to submit a content Takedown Request</h2>
+                    <p>You can submit a request to take down a post if it</p>
+                    <p>     - Goes against anything in the <a asp-area="" asp-controller="Home" asp-action="Privacy">Terms of Service</a></p>
+                    <p>     - The post contains anything illegal such as but not limited to CSAM (Content related to Child abuse), Revenge Porn or Gore</p>
+                    <p>     - Or if you feel there is something wrong with it</p>
+                    <p>Our content review team will review the content and if deemed not right for the platform it will be taken down.</p>
+                    <p>You will recieve an email in the email provided the result of content review team's findings.</p>
+                    <div class="mb-3">
+                        <label for="takedownEmail" class="form-label">Enter your email (optional)</label>
+                        <input type="email" oninput="updateEmailCount()" maxlength="100" class="form-control" id="takedownEmail" placeholder="Your Email">
+                        <small id="EmailCounter" class="text-muted">0 / 100 characters</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="takedownDescription" class="form-label">State the problem with the Post*</label>
+                        <input type="text" maxlength="300" oninput="updateTakedownCount()" class="form-control" id="takedownDescription" placeholder="Problem with the post" required>
+                        <small id="TakedownCounter" class="text-muted">0 / 300 characters</small>
+                        <small id="descriptionError" class="text-danger" style="display: none;">⚠️ Please enter a reason for the takedown request.</small>
+                    </div>
+                    <input type="hidden" id="takedownPostId" value="@Model.Id" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-secondary" id="submitTakedownRequest">Submit</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let lazyImages = document.querySelectorAll("img.lazy-load");
+
+            if ("IntersectionObserver" in window) {
+                let observer = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            let img = entry.target;
+                            img.src = img.dataset.src;
+                            img.removeAttribute("loading"); // Remove native lazy loading after loading
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(img => {
+                    observer.observe(img);
+                });
+            }
+        });
+    </script>
+
+    <script>
+
+        document.getElementById("submitTakedownRequest").addEventListener("click", function () {
+            var email = document.getElementById("takedownEmail").value;
+            var description = document.getElementById("takedownDescription").value;
+            var postId = document.getElementById("takedownPostId").value;
+            const errorText = document.getElementById("descriptionError");
+
+                    // ✅ Show inline error message if the description field is empty
+            if (!description) {
+                errorText.style.display = "block"; // Show the error message
+                return;
+            } else {
+                errorText.style.display = "none"; // Hide error message if valid
+            }
+
+            fetch("/Home/TakedownRequest", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({
+                Email: email,
+                Description: description,
+                PostId: window.location.href
+            })
+        })
+        .then(async response => {
+            if (response.status === 429) {
+                try {
+                    const result = await response.json();
+                    if (result.redirectUrl) {
+                        window.location.href = result.redirectUrl;
+                    } else {
+                        showToast(result.message || "⛔ You're doing that too fast.");
+                    }
+                } catch {
+                    // Fallback if JSON can't be parsed
+                    window.location.href = "/Home/RateLimit";
+                }
+                return;
+            }
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                showToast("✅ Takedown request sent successfully.");
+                document.getElementById("takedownRequestForm").reset();
+                const modal = bootstrap.Modal.getInstance(document.getElementById("takedownModal"));
+                modal.hide();
+            } else {
+                showToast("Error: " + (data.message || "Something went wrong."));
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            errorText.textContent = "❌ Something went wrong. Please try again.";
+            errorText.style.display = "block";
+            });
+        });
+    </script>
+        
+    <script>
+            document.addEventListener("DOMContentLoaded", function () {
+            // Check if user came from reels wanting to comment
+            if (sessionStorage.getItem("scrollToComment") === "true") {
+                sessionStorage.removeItem("scrollToComment"); // Clear flag
+                scrollToCommentBox(); // Scroll & focus comment box
+            }
+        });
+
+            function scrollToCommentBox() {
+            var commentBox = document.getElementById("add-comment-form");
+            var textArea = commentBox.querySelector("textarea"); // Find the comment input
+
+            if (commentBox) {
+                commentBox.scrollIntoView({ behavior: "smooth", block: "center" });
+
+                // Delay focus slightly to ensure smooth scrolling completes before focus
+                setTimeout(() => {
+                    if (textArea) {
+                        textArea.focus();
+                    }
+                }, 500); // 500ms delay to ensure scroll finishes
+            }
+        }
+
+        // Code for share button functionality and the toaster alert for it.
+                function copyLinkToClipboard(postId, slug) {
+            if (!postId || !slug) {
+                console.error("Error: Post ID or slug is undefined");
+                showToast("❌ Error: Unable to copy link.");
+                return;
+            }
+
+            const shareLink = `${window.location.origin}/Details/${postId}/${slug}`;
+            navigator.clipboard.writeText(shareLink).then(() => {
+                showToast("🔗 Link copied to clipboard!");
+            }).catch(err => {
+                console.error("Error copying link:", err);
+                showToast("❌ Failed to copy link.");
+            });
+        }
+    </script>
+
+    <script>
+
+        function updateCommentCount() {
+            var input = document.getElementById("CommentInput");
+            var counter = document.getElementById("CommentCounter");
+            counter.textContent = input.value.length + " / 500 characters";
+        }
+
+        function updateReportCount() {
+            var input = document.getElementById("reportDetails");
+            var counter = document.getElementById("ReportCounter");
+            counter.textContent = input.value.length + " / 150 characters";
+        }
+
+        function updateEmailCount() {
+            var input = document.getElementById("takedownEmail");
+            var counter = document.getElementById("EmailCounter");
+            counter.textContent = input.value.length + " / 100 characters";
+        }
+
+       function updateTakedownCount() {
+            var input = document.getElementById("takedownDescription");
+            var counter = document.getElementById("TakedownCounter");
+            counter.textContent = input.value.length + " / 300 characters";
+        }
+
+             function saveScrollAndNavigate(url) {
+            sessionStorage.setItem("scrollToComment", "false"); // or "true" if needed
+            sessionStorage.setItem("scrollY", window.scrollY);
+            window.location.href = url;
+        }
+
+
+    </script>
+
+<script src="~/js/Comments.js" asp-append-version="true"></script>
+
+}

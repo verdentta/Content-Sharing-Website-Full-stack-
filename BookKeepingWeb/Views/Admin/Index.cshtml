@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Admin Panel";
+}
+<style>
+    body {
+        background-color: #000000; /* Pure black background */
+        color: #f8f9fa; /* Light grey text */
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .list-group .list-group-item {
+        background-color: transparent;
+        color: white; /* White text for contrast */
+        border: 1px solid #b71c1c; /* Dark red border */
+    }
+
+
+</style>
+<br>
+<br>
+<h2>Admin Panel</h2>
+
+<ul class="list-group">
+    <li class="list-group-item">
+        <a asp-action="ViewAllContent" class="btn btn-primary">📂 View All Uploaded Content</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="ViewAllUsers" class="btn btn-warning">👤 Manage All Users</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="TakedownRequests" class="btn btn-danger">⚠️ Review Takedown Requests</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="UnmoderatedContent" class="btn btn-primary">✅ Unmoderated Content</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="ModeratedContent" class="btn btn-primary">✅ Moderated Content</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="ReportedComments" class="btn btn-danger">🚩 Reported Comments</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="ReportedForumComments" class="btn btn-danger">🚩 Reported Forum Comments</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="CreateThread" class="btn btn-info">📝 Create Thread</a>
+    </li>
+    <li class="list-group-item">
+        <a asp-action="EditThreads" class="btn btn-info">✏️ Edit Threads</a>
+    </li>
+
+    <li class="list-group-item">
+        <a asp-action="ResetUserPasswords" class="btn btn-danger">🔑 Reset User Passwords</a>
+    </li>
+
+
+
+</ul>

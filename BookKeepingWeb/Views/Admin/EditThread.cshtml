@@ -1,0 +1,65 @@
+﻿@model BookKeepingWeb.Models.EditForumThreadViewModel
+
+@{
+    ViewData["Title"] = "Edit Forum Thread";
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<style>
+    body {
+        background-color: #000000;
+        color: #f8f9fa;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal; /* Ensures text flows naturally */
+        max-width: 200px; /* Optional: Prevents excessive widening */
+    }
+
+</style>
+<br />
+<h2>Edit Forum Thread</h2>
+
+<form asp-action="EditThread" asp-controller="Admin" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" value="@Model.Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Title*</label>
+        <input asp-for="Title" class="form-control" required maxlength="100">
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Description*</label>
+        <textarea asp-for="Description" class="form-control" required maxlength="2000"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Current Image</label>
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <br />
+            <img src="@Model.ImagePath" alt="Thread Image" style="max-width: 200px; display: block;" />
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Upload New Image (Optional)</label>
+        <input type="file" name="ImageFile" class="form-control" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="EditThreads" asp-controller="Admin" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,199 @@
+﻿@model BookKeepingWeb.Models.UserProfile
+
+<link rel="stylesheet" href="~/css/editprofile.css">
+
+<div class="container mt-4">
+    <h2>Edit Profile</h2>
+    <form asp-action="Index" method="post" enctype="multipart/form-data" id="profileForm">
+        <div class="form-group">
+            <label for="ScreenName">Screen Name</label>
+            <input asp-for="ScreenName" class="form-control" maxlength="20" id="ScreenNameInput" oninput="updateScreenNameCount()" />
+            <small id="ScreenNameCounter" class="text-muted">0 / 20 characters</small>
+            <span asp-validation-for="ScreenName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <textarea asp-for="Description" class="form-control" maxlength="490" id="descriptionInput" oninput="updateDescriptionCount()"></textarea>
+            <small id="descriptionCounter" class="text-muted">0 / 490 characters</small>
+        </div>
+
+        <div class="form-group">
+            <label for="Country">Country</label>
+            <select asp-for="Country" class="form-control" id="country-selector" data-current-country="@Model.Country">
+                <option value="None">None</option>
+                <!-- Dynamically populated by countrySelect.js -->
+            </select>
+            <span asp-validation-for="Country" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="Age">Age</label>
+            <input asp-for="Age" class="form-control" type="number" />
+            <span asp-validation-for="Age" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label for="uploadedFile">Profile Picture</label>
+            <input type="file" class="form-control" id="uploadedFile" name="uploadedFile" />
+        </div>
+
+        <div class="mb-3">
+            <label for="backgroundImage">Background Banner</label>
+            <input type="file" class="form-control" id="backgroundImage" name="BackgroundImage" />
+        </div>
+
+        <!-- Progress Bar (Hidden by Default) -->
+        <div id="progress-container" style="display: none; margin-bottom: 15px;">
+            <div class="progress">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+            <p id="progress-text" style="text-align: center; margin-top: 5px;">Updating...</p>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    </form>
+</div>
+
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="errorModalLabel">Invalid File Type</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="errorModalText">
+                Invalid file selected.
+            </div>
+            <div class="modal-footer">
+                <a href="https://convertio.co/" target="_blank" class="btn btn-primary">Convert File</a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/countrySelect.js"></script>
+
+<script>
+    function updateScreenNameCount() {
+        var input = document.getElementById("ScreenNameInput");
+        var counter = document.getElementById("ScreenNameCounter");
+        counter.textContent = input.value.length + " / 20 characters";
+    }
+
+    function updateDescriptionCount() {
+        var input = document.getElementById("descriptionInput");
+        var counter = document.getElementById("descriptionCounter");
+        counter.textContent = input.value.length + " / 490 characters";
+    }
+
+
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const allowedExtensions = [".jpg", ".jpeg", ".png"];
+
+        function showError(message) {
+            message += "\nNeed to convert your file? Try https://convertio.co/";
+            document.getElementById("errorModalText").innerText = message;
+            var errorModal = new bootstrap.Modal(document.getElementById("errorModal"));
+            errorModal.show();
+        }
+
+        function validateFileType(fileInput, fileType) {
+            if (fileInput.files.length > 0) {
+                let fileName = fileInput.files[0].name.toLowerCase();
+                let fileExtension = fileName.substring(fileName.lastIndexOf("."));
+                if (!allowedExtensions.includes(fileExtension)) {
+                    showError(`Only JPG, JPEG, and PNG files are allowed for ${fileType}.`);
+                    fileInput.value = ""; // Clear the invalid file selection
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        document.getElementById("uploadedFile").addEventListener("change", function () {
+            validateFileType(this, "Profile Picture");
+        });
+
+        document.getElementById("backgroundImage").addEventListener("change", function () {
+            validateFileType(this, "Background Banner");
+        });
+
+        const form = document.getElementById("profileForm"); // ✅ Make sure the form has this ID
+        const submitButton = document.querySelector("button[type='submit']");
+        const progressContainer = document.getElementById("progress-container");
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            let profileValid = validateFileType(document.getElementById("uploadedFile"), "Profile Picture");
+            let backgroundValid = validateFileType(document.getElementById("backgroundImage"), "Background Banner");
+
+            // ✅ Allow submission if at least one is valid OR if both are empty (user didn't upload anything)
+            if (!(profileValid && backgroundValid) && !(document.getElementById("uploadedFile").value === "" && document.getElementById("backgroundImage").value === "")) {
+                return;
+            }
+
+            // ✅ Show progress bar
+            progressContainer.style.display = "block";
+            submitButton.disabled = true; // Disable submit button
+
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", form.action, true);
+
+            // Track upload progress
+            xhr.upload.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    var percentComplete = Math.round((event.loaded / event.total) * 100);
+                    if (percentComplete < 100) {
+                        progressBar.style.width = percentComplete + "%";
+                        progressBar.setAttribute("aria-valuenow", percentComplete);
+                        progressText.innerText = "Updating... " + percentComplete + "%";
+                    } else {
+                        progressBar.style.width = "99%"; // Hold at 99% until server responds
+                        progressText.innerText = "Updating...";
+                    }
+                }
+            };
+
+            // Handle successful update
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    progressBar.style.width = "100%"; // Move to 100% only after server response
+                    progressBar.classList.add("bg-success");
+                    progressText.innerText = "Update Complete!";
+
+                    setTimeout(() => {
+                        window.location.href = "/Profile/Display"; // Redirect to profile display
+                    }, 1000);
+                } else {
+                    progressText.innerText = "Update Failed!";
+                    progressBar.classList.add("bg-danger");
+                    submitButton.disabled = false;
+                }
+            };
+
+            // Handle upload errors
+            xhr.onerror = function () {
+                progressText.innerText = "Error during update!";
+                progressBar.classList.add("bg-danger");
+                submitButton.disabled = false;
+            };
+
+            xhr.send(formData); // ✅ Send the form data via AJAX
+        });
+    });
+</script>
+
+

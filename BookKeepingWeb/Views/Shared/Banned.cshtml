@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Banned";
+    Layout = null;
+}
+<link rel="stylesheet" href="~/css/banned.css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You Are Banned</title>
+</head>
+<body>
+    <h1>🚫 YOU ARE BANNED 🚫</h1>
+    <h2>Your account has been permanently deleted. Further exploitative pursuits to breach this ban will result in immediate IP blacklisting and potential legal escalation. </h2>
+
+    @if (TempData["BanReason"] != null)
+    {
+        <p class="reason"><strong>Reason:</strong> @TempData["BanReason"]</p>
+    }
+    <br />
+    <br />
+    <a class="btn-home" href="@Url.Action("HomePage", "Home")">Return to Safety</a>
+</body>
+</html>

@@ -1,0 +1,129 @@
+﻿
+<link rel="stylesheet" href="~/css/scrollviewTheme.css" />
+
+<!-- Full-screen overlay for age verification -->
+<div id="age-overlay">
+    <div id="age-card">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <p class="card-text mb-4" style="color: white;">Are you over the age of 18?</p>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-yes" onclick="closeAgeCard(true)">Yes</button>
+                    <button class="btn btn-no" onclick="closeAgeCard(false)">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+
+@* <div class="text-center">
+    <br />
+    <h1 class="display-4">Scroll Down!</h1>
+</div> *@
+
+<div id="content-container" class="container mt-5">
+    <div id="current-post"></div>
+</div>
+
+
+
+<!-- 🚩 Takedown Request Modal (Place this inside index.cshtml but OUTSIDE dynamically loaded posts) -->
+<div class="modal fade" id="takedownModal" tabindex="-1" aria-labelledby="takedownModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="takedownRequestForm">
+                    @Html.AntiForgeryToken()
+
+                    <h2>Fill out the form to submit a content Takedown Request</h2>
+                    <p>You can submit a request to take down a post if it</p>
+                    <p>     - Goes against anything in the <a asp-area="" asp-controller="Home" asp-action="Privacy">Terms of Service</a></p>
+                    <p>     - The post contains anything illegal such as but not limited to CSAM (Content related to Child abuse), Revenge Porn or Gore</p>
+                    <p>     - Or if you feel there is something wrong with it</p>
+                    <p>Our content review team will review the content and if deemed not right for the platform it will be taken down.</p>
+                    <p>You will recieve an email in the email provided the result of content review team's findings.</p>
+
+
+                    <div class="mb-3">
+                        <label for="takedownEmail" class="form-label">Enter your email (optional)</label>
+                        <input type="email" oninput="updateEmailCount()" maxlength="100" class="form-control" id="takedownEmail" placeholder="Your Email">
+                        <small id="EmailCounter" class="text-muted">0 / 100 characters</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="takedownDescription" class="form-label">State the problem with the Post*</label>
+                        <input type="text" maxlength="300" oninput="updateTakedownCount()" class="form-control" id="takedownDescription" placeholder="Problem with the post" required>
+                        <small id="TakedownCounter" class="text-muted">0 / 300 characters</small>
+                        <small id="descriptionError" class="text-danger" style="display: none;">⚠️ Please enter a reason for the takedown request.</small>
+                    </div>
+
+                    <input type="hidden" id="takedownPostId"> <!-- ✅ This is dynamically updated when a flag button is clicked -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-secondary" id="submitTakedownRequest">Submit</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateForm(event) {
+        const form = document.getElementById("takedownRequestForm");
+        if (!form.checkValidity()) {
+            event.preventDefault(); // Prevent submission if invalid
+            event.stopPropagation();
+            return false;
+        }
+        return true; // Allow submission if valid
+    }
+
+    // Ensure the form is checked for validity when the modal is shown
+    document.getElementById("takedownModal").addEventListener("shown.bs.modal", function () {
+        document.getElementById("takedownDescription").setCustomValidity("");
+    });
+</script>
+
+<script>
+            document.addEventListener("DOMContentLoaded", function () {
+        const overlay = document.getElementById("age-overlay");
+
+        // Check if the user has already verified age
+        const isAgeVerified = localStorage.getItem("ageVerified") === "true";
+
+        if (!isAgeVerified) {
+            overlay.classList.add("active"); // Only show if needed
+            document.body.classList.add("no-scroll"); // Prevent scrolling
+        }
+    });
+
+    // Function to handle user response
+    function closeAgeCard(isAdult) {
+        if (isAdult) {
+            // If user selects "Yes", store in localStorage and hide overlay
+            localStorage.setItem("ageVerified", "true");
+            document.getElementById("age-overlay").classList.remove("active");
+            document.body.classList.remove("no-scroll");
+        } else {
+            // Redirect them away
+            window.location.href = "https://www.google.com";
+        }
+    }
+
+    function updateTakedownCount() {
+        var input = document.getElementById("takedownDescription");
+        var counter = document.getElementById("TakedownCounter");
+        counter.textContent = input.value.length + " / 300 characters";
+    }
+
+    function updateEmailCount() {
+        var input = document.getElementById("takedownEmail");
+        var counter = document.getElementById("EmailCounter");
+        counter.textContent = input.value.length + " / 100 characters";
+    }
+
+
+
+</script>
+<script src="~/js/infiniteScroll.js" asp-append-version="true"></script>

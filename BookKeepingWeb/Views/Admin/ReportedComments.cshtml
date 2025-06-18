@@ -1,0 +1,94 @@
+﻿@model IEnumerable<BookKeepingWeb.Models.CommentReport>
+
+@{
+    ViewData["Title"] = "Reported Comments";
+}
+
+<style>
+    * {
+        color: white;
+    }
+    body {
+        background-color: #000000; /* Dark Theme */
+        font-family: 'Roboto', sans-serif;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal; /* Ensures text flows naturally */
+        max-width: 200px; /* Optional: Prevents excessive widening */
+    }
+
+</style>
+
+@if (TempData["AdminError"] != null)
+{
+    <div class="alert alert-danger text-center">@TempData["AdminError"]</div>
+}
+
+<br>
+<div class="d-flex justify-content-between align-items-center">
+    <h2>🚩 Reported Comments</h2>
+    <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">⬅ Back to Admin Panel</a>
+</div>
+<br />
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Comment ID</th>
+            <th>Comment Content</th>
+            <th>Reported By</th>
+            <th>Reason</th>
+            <th>Additional Details</th>
+            <th>Date Reported</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var report in Model)
+        {
+            <tr>
+                <td>@report.CommentId</td>
+                <td>@report.Comment?.Content</td>
+                <td>@report.ReportedByUser?.ScreenName (@report.ReportedByUserId)</td>
+                <td>@report.ReportReason</td>
+                <td>@report.AdditionalDetails</td>
+                <td>@report.ReportDate.ToShortDateString()</td>
+                <td>
+                    <!-- ✅ Resolve: Removes report but keeps comment -->
+                    <form method="post" asp-action="ResolveCommentReport" asp-route-id="@report.Id" class="d-inline">
+                        <button type="submit" class="btn btn-success">Resolve</button>
+                    </form>
+
+                    <!-- ❌ Delete: Removes comment & all reports -->
+                    <form method="post" asp-action="DeleteReportedComment" asp-route-commentId="@report.CommentId" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Comment</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("ReportedComments", new { page = i })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<!-- If no reports -->
+@if (!Model.Any())
+{
+    <p class="text-center mt-3">✅ No reported comments at this time.</p>
+}

@@ -1,0 +1,178 @@
+﻿@model PaginatedList<BookKeepingWeb.Models.UploadContent>
+@using BookKeepingWeb.Models
+@using BookKeepingWeb.Helpers
+
+<link rel="stylesheet" href="~/css/paginatedView.css" />
+<style>
+    html {
+        scroll-behavior: auto !important;
+    }
+</style>
+
+<div class="text-center">
+    <br />
+    <h1 class="display-4">All Content</h1>
+</div>
+
+<!-- Filter Button with Toggleable Section -->
+<details class="filter-container" open>
+    <summary class="filter-button">Filter</summary>
+    <form method="get" asp-action="PaginatedView" class="filter-content">
+        <div class="checkbox-container">
+           
+            @foreach (var tag in new[] {
+            "Romantic", "Skits", "Fantasy", "Roleplay", "Home", "Projects", "Makeup", "Cosplay",
+            "Straight", "Female", "Male", "LGBTQ", "Solo", "Group",
+            "Fitness", "Body", "Lifestyle", "Beauty", "Culture",
+            "Voices", "Furry", "Cartoon",
+            "Nature", "Public", "Office", "Room",
+            "AI", "Goals", "Trending", "Anime"
+            })
+            {
+                <div class="tag-container">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" name="SelectedTags" value="@tag" id="@tag"
+                        @(ViewData["SelectedTags"] != null && ((List<string>)ViewData["SelectedTags"]).Contains(tag) ? "checked" : "") />
+                        <label for="@tag">@tag</label>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="checkbox-container mt-4">
+            <h5>File Types:</h5>
+            @foreach (var fileType in Enum.GetValues(typeof(FileType)).Cast<FileType>().Where(ft => ft != FileType.Gif))
+            {
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" name="SelectedFileTypes" value="@(fileType)" id="@(fileType)"
+                    @(ViewData["SelectedFileTypes"] != null && ((List<FileType>)ViewData["SelectedFileTypes"]).Contains(fileType) ? "checked" : "") />
+                    <label for="@(fileType)">@fileType</label>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-3">
+            <button type="submit" class="button-1 me-2" role="button">Apply</button>
+            <a href="@Url.Action("PaginatedView", "Home")" class="button-1" role="button">Reset</a>
+        </div>
+    </form>
+</details>
+
+<div class="container mt-3">
+    <div class="row row-cols-1 row-cols-md-4 g-3">
+        @foreach (var content in Model)
+        {
+            <div class="col">
+                <div class="card mb-4 clickable-content h-100"
+                     onclick="saveScrollAndNavigate('@Url.Action("Details", "Home", new { id = content.Id })')"
+                     style="cursor: pointer; background-color: #5f0706; border-radius: 10px; overflow: hidden;">
+                    <div class="media-container">
+                        @switch (content.ContentType)
+                        {
+                            case FileType.Image or FileType.Gif:
+                                <img src="@content.ThumbnailPath" class="card-img-top" alt="@content.Title" loading="lazy"
+                                     style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                break;
+                            case FileType.Video:
+                                <img src="@content.ThumbnailPath" class="card-img-top"
+                                     alt="@content.Title" loading="lazy"
+                                     style="width: 100%; height: 100%; object-fit: contain; background-color: #333333;" />
+                                <div class="play-button"></div>
+                                break;
+                        }
+                    </div>
+                    <div class="card-body text-center d-flex flex-column h-100">
+                        <h5 class="card-title">@content.Title</h5>
+                        <p class="text-muted mt-auto"><small>Uploaded on: @content.CreatedDateTime.ToShortDateString()</small></p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+        @if (Convert.ToInt32(ViewData["TotalPages"]) > 1)
+        {
+            int currentPage = ViewData["CurrentPage"] != null ? Convert.ToInt32(ViewData["CurrentPage"]) : 1;
+            int totalPages = ViewData["TotalPages"] != null ? Convert.ToInt32(ViewData["TotalPages"]) : 1;
+            int maxPagesToShow = 5;
+            int half = maxPagesToShow / 2;
+
+            var selectedTags = string.Join("&", ((List<string>)ViewData["SelectedTags"]).Select(tag => $"SelectedTags={tag}"));
+            var selectedFileTypes = string.Join("&", ((List<FileType>)ViewData["SelectedFileTypes"]).Select(type => $"SelectedFileTypes={type}"));
+            string baseUrl = $"/Home/PaginatedView?pageSize={ViewData["PageSize"] ?? 20}&{selectedTags}&{selectedFileTypes}";
+
+            int startPage = Math.Max(1, currentPage - half);
+            int endPage = Math.Min(totalPages, startPage + maxPagesToShow - 1);
+
+            // Adjust if not enough pages at end
+            if (endPage - startPage + 1 < maxPagesToShow)
+            {
+                startPage = Math.Max(1, endPage - maxPagesToShow + 1);
+            }
+
+            // Previous arrow
+            if (currentPage > 1)
+            {
+                <a class="btn btn-primary me-2" href="@($"{baseUrl}&page={currentPage - 1}")">«</a>
+            }
+
+            // Left gap + first page
+            if (startPage > 1)
+            {
+                <a class="btn btn-outline-primary me-1" href="@($"{baseUrl}&page=1")">1</a>
+                if (startPage > 2)
+                {
+                    <span class="btn btn-outline-secondary disabled">...</span>
+                }
+            }
+
+            // Main page links
+            for (int i = startPage; i <= endPage; i++)
+            {
+                <a class="btn @(i == currentPage ? "btn-primary" : "btn-outline-primary") me-1" href="@($"{baseUrl}&page={i}")">@i</a>
+            }
+
+            // Right gap + last page
+            if (endPage < totalPages)
+            {
+                if (endPage < totalPages - 1)
+                {
+                    <span class="btn btn-outline-secondary disabled">...</span>
+                }
+                <a class="btn btn-outline-primary me-1" href="@($"{baseUrl}&page={totalPages}")">@totalPages</a>
+            }
+
+            // Next arrow
+            if (currentPage < totalPages)
+            {
+                <a class="btn btn-primary ms-2" href="@($"{baseUrl}&page={currentPage + 1}")">»</a>
+            }
+        }
+    </div>
+
+@section Scripts {
+
+    
+    <script>
+        // Disable browser's default scroll restoration
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+
+        // Function to save scroll position and navigate
+        function saveScrollAndNavigate(url) {
+            sessionStorage.setItem('scrollPosition', window.scrollY);
+            window.location.href = url;
+        }
+
+        // Restore scroll position immediately
+        (function () {
+            const scrollPosition = sessionStorage.getItem('scrollPosition');
+            if (scrollPosition !== null) {
+                window.scrollTo(0, parseInt(scrollPosition));
+                sessionStorage.removeItem('scrollPosition');
+            }
+        })();
+    </script>
+}

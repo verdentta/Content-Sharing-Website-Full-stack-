@@ -1,0 +1,252 @@
+﻿﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+@{
+    bool isAdmin = false;
+
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        if (currentUser != null)
+        {
+            isAdmin = await UserManager.IsInRoleAsync(currentUser, "Admin");
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Share4Us</title>
+    @RenderSection("Head", required: false)
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/navbar.css">
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico?v=2" />
+</head>
+<body>
+    @{
+        string? profilePicture = "/images/default-profile.png"; // Default profile picture
+
+        if (SignInManager.IsSignedIn(User))
+        {
+            var userId = UserManager.GetUserId(User); // Get the logged-in user's ID
+            var userProfile = Context.RequestServices.GetService<BookKeepingWeb.Data.ApplicationDbContext>()?
+            .UserProfiles
+            .FirstOrDefault(u => u.UserId == userId);
+
+            if (userProfile?.ProfilePicturePath != null)
+            {
+                profilePicture = userProfile.ProfilePicturePath; // Use the profile picture from the database
+            }
+        }
+    }
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <!-- Hamburger Menu Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Brand and Links -->
+                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Homepage">
+                    <span style="font-weight: bold; font-size: 1.4rem;">Share4Us</span>
+                    
+                </a>
+
+                <!-- Collapsible Navbar Content -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="PaginatedView">Filter📂</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand" asp-controller="Forums" asp-action="Index">Forums💬</a>
+                        </li>
+
+                        <!-- Add Privacy and Terms Links -->
+                        <li class="nav-item">
+                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy&TOS📝</a>
+                        </li>
+                        @* <li class="nav-item">
+                            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="TermsOfService">TOS📝</a>
+                        </li> *@
+
+                    </ul>
+
+                    <!-- Search Icon -->
+                    <button class="search-icon-button" type="button" data-bs-toggle="collapse" data-bs-target="#searchCollapse" aria-expanded="false" aria-controls="searchCollapse" style="font-size: 1.5rem; font-weight: bold;">
+                        Search🔍
+                    </button>
+
+                    <!-- Collapsible Search Area -->
+                    <div class="collapse" id="searchCollapse">
+                        @using (Html.BeginForm("Search", "Search", FormMethod.Get))
+                        {
+                            <div class="searchArea bg-body mx-0 mt-2">
+                                <input class="searchBarInputBox bg-body" type="search" name="search" required id="search" placeholder="Search" autocomplete="off">
+                                <div class="dropdown">
+                                    @* <button class="dropdown-toggle searchButton firstButton" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">Type</button> *@
+                                    @* <div class="dropdown-menu" id="type-dropdown" aria-labelledby="dropdownMenuButton">
+                                        <div class="dropdown-item">
+                                            <input class="form-check-input" name="media" type="checkbox" value="@FileType.Image" id="image">
+                                            <label class="form-check-label" for="image">Image</label>
+                                        </div>
+                                        <div class="dropdown-item">
+                                            <input class="form-check-input" name="media" type="checkbox" value="@FileType.Video" id="video">
+                                            <label class="form-check-label" for="video">Video</label>
+                                        </div>
+                                        <div class="dropdown-item">
+                                            <input class="form-check-input" name="media" type="checkbox" value="@FileType.Gif" id="gif">
+                                            <label class="form-check-label" for="gif">Gif</label>
+                                        </div>
+                                    </div> *@
+                                </div>
+                                <button class="searchButton lastButton" type="submit">Search</button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Right Section: Upload and My Account -->
+                    <div class="d-flex align-items-center">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            
+                           
+                            <a class="btn btn-light upload-button me-2" asp-controller="UploadContent" asp-action="Create">
+                                    Upload 🚀
+                            </a>    
+                            
+                            <div class="dropdown">
+                                <button class="btn btn-light dropdown-toggle" type="button" id="myAccountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <img src="@profilePicture" alt="Profile Picture" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                    Account
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="myAccountDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Display">My Profile</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Edit Profile</a></li>
+                                    <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Manage</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    @if (isAdmin)
+                                    {
+                                        <li><a class="dropdown-item fw-bold" asp-controller="Admin" asp-action="Index">🛠 Admin Panel</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    }
+                                    <li>
+                                        <form id="logoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Homepage", "Home")" method="post" class="dropdown-item">
+                                            <button type="submit" class="btn btn-logout">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+                        else
+                        {
+                            @await Html.PartialAsync("_LoginPartial")
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 🔥 Global Toast Notification (Reusable) -->
+    <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1050;">
+        <div id="globalToast" class="toast align-items-center text-white bg-dark border-2 border-danger" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="globalToastMessage">
+                    <!-- Message will be inserted here dynamically -->
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #globalToast {
+            background-color: black !important; /* Black background */
+            border: 2px solid red !important; /* Red border */
+            color: white !important; /* White text */
+        }
+
+        .btn-close-white {
+            filter: invert(1); /* Makes close button visible on dark background */
+        }
+    </style>
+
+    <div class="page-layout">
+        <!-- Left Ad Slot -->
+         @* <div class="ad-slot1" id="ad-slot">
+            @if (!SignInManager.IsSignedIn(User))
+            {
+                <a asp-area="Identity" asp-page="/Account/Register">
+                    <img src="/default/bannerad.gif" width="250" height="750" alt="Ad Banner" />
+                </a>
+            }
+            else
+            {
+                <img src="/default/bannerad.gif" width="250" height="750" alt="Ad Banner" />
+            }
+        </div>  *@
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <main role="main" class="pb-3">
+                @RenderBody()
+            </main>
+        </div>
+
+        <!-- Right Ad Slot -->
+         @* <div class="ad-slot2" id="ad-slot">
+            @if (!SignInManager.IsSignedIn(User))
+            {
+                <a asp-area="Identity" asp-page="/Account/Register">
+                    <img src="/default/bannerad.gif" width="250" height="750" alt="Ad Banner" />
+                </a>
+            }
+            else
+            {
+                <img src="/default/bannerad.gif" width="250" height="750" alt="Ad Banner" />
+            }
+        </div>  *@
+    </div>
+
+    @* <footer id="sticky-footer">
+        <div class="justify-content-center align-content-center gap-1">
+            &copy; 2024 - BookKeepingWeb - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> <a asp-area="" asp-controller="Home" asp-action="TermsOfService">Terms of Service</a> 
+        </div>
+    </footer> *@
+
+
+    
+    <script>
+        function showToast(message, type = "danger") {
+            const toastEl = document.getElementById("globalToast");
+            const toastMessage = document.getElementById("globalToastMessage");
+
+            toastMessage.innerHTML = message;
+
+            // Apply theme (Default is "danger" for red/black)
+            if (type === "success") {
+                toastEl.classList.remove("bg-danger");
+                toastEl.classList.add("bg-success");
+            } else {
+                toastEl.classList.remove("bg-success");
+                toastEl.classList.add("bg-danger");
+            }
+
+            var toast = new bootstrap.Toast(toastEl, { delay: 3000 }); // Auto-hide after 3 seconds
+            toast.show();
+        }
+    </script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

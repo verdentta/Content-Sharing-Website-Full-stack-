@@ -1,0 +1,297 @@
+﻿/* 🌙 Dark Theme for Detailed Thread Page */
+body {
+    background-color: #000000; /* Black Background */
+    color: #f8f9fa; /* Light Gray Text */
+    font-family: 'Roboto', sans-serif;
+}
+
+/* 📌 Container */
+.thread-container {
+    max-width: 95%;
+    margin: auto;
+    padding: 15px;
+    background-color: #111; /* Slightly lighter black */
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 0, 0, 0.3); /* Red glow */
+}
+
+/* 📌 Title */
+.thread-title {
+    color: #ff4444; /* Red */
+    text-align: left;
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+/* 📌 Metadata */
+.thread-meta {
+    font-size: 0.9rem;
+    color: #bbb;
+    text-align: left;
+}
+
+/* 📌 Description */
+.thread-description {
+    font-size: 1.1rem;
+    background-color: #222;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* 📌 Image */
+.thread-image {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 10px;
+    margin: auto;
+    border: 2px solid #B22222;
+}
+
+/* 🔹 Comment Section */
+.comment-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #222;
+    border-radius: 8px;
+}
+
+/* 🔹 Comment */
+.comment {
+    padding: 10px;
+    border: 1px solid #B22222; /* Red border */
+    background-color: #181818;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+    .comment:hover {
+        box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.5);
+    }
+
+/* 🔹 Comment Author */
+.comment-author {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ff6666;
+}
+
+/* 🔹 Comment Content */
+.comment-content {
+    font-size: 0.95rem;
+    color: #ddd;
+}
+
+/* 🔹 Report Button */
+.report-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .report-form select,
+    .report-form input {
+        font-size: 0.85rem;
+    }
+
+    .report-form button {
+        font-size: 0.85rem;
+    }
+
+/* ✨ Mobile Adjustments */
+@media (max-width: 768px) {
+    .thread-container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    .thread-title {
+        font-size: 1.6rem;
+    }
+
+    .comment {
+        padding: 8px;
+    }
+}
+
+/* 🔴 Report Comment Modal */
+.modal-content {
+    background-color: #111;
+    color: white;
+    border-radius: 10px;
+    border: 1px solid #B22222; /* Red border */
+}
+
+.modal-body h4 {
+    color: #ff4444;
+}
+
+.modal-footer button {
+    font-size: 0.9rem;
+}
+
+#reportReason, #reportDetails {
+    background-color: #222;
+    color: white;
+    border: 1px solid #B22222;
+}
+
+#btn btn-primary {
+    background-color: orange;
+    border-color: #e91ec9;
+}
+
+.custom-comment-btn {
+    background-color: #d32f2f; /* Deep Red Background */
+    border-color: #b71c1c; /* Darker Red Border */
+    color: white; /* White Text */
+    font-weight: bold; /* Bold Text */
+    padding: 10px 20px; /* Adjust Padding */
+    border-radius: 8px; /* Rounded Corners */
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+    .custom-comment-btn:hover {
+        background-color: #ff5722; /* Orange-Red Hover Effect */
+        border-color: #e64a19; /* Slightly Darker Orange */
+    }
+
+#commentContent {
+    background-color: #111111; /* Black background */
+    color: #ffffff; /* White text for contrast */
+    border: 1px solid #b71c1c; /* Dark red border to match theme */
+    padding: 10px;
+    border-radius: 5px; /* Optional: rounded edges */
+    font-size: 1rem;
+}
+
+    #commentContent::placeholder {
+        color: #aaaaaa; /* Light gray placeholder for readability */
+    }
+
+    #commentContent:focus {
+        border-color: #ff5722; /* Bright orange border on focus */
+        outline: none;
+    }
+
+/* 🖼️ Profile Picture Styles */
+.author-profile-pic, .comment-profile-pic {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 5px;
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+/* ✨ Make Author and Commenters Clickable */
+.author-link, .comment-author-link {
+    text-decoration: none;
+    color: #f8f9fa;
+  
+    
+}
+
+    .author-link:hover, .comment-author-link:hover {
+        color: red;
+    }
+/* 📅 Comment Date Style */
+.comment-date {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+/* Targeting all reply buttons */
+.reply-button {
+    color: #ff4d4d; /* Change text color */
+    font-size: 0.7rem;
+    text-decoration: none; /* Remove underline */
+    border: 1px solid #ff4d4d; /* Add a red border */
+    padding: 1px 12px; /* Add padding */
+    border-radius: 5px; /* Round corners */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+    background-color: #1a1a1a; /* Change background on hover */
+}
+    /* Hover effect */
+    .reply-button:hover {
+        background-color: #ff4d4d; /* Change background on hover */
+        color: white; /* Change text color on hover */
+    }
+
+.report-button {
+    color: #ff4d4d; /* Change text color */
+    font-size: 0.7rem;
+    text-decoration: none; /* Remove underline */
+    border: 1px solid #ff4d4d; /* Add a red border */
+    padding: 1px 12px; /* Add padding */
+    border-radius: 5px; /* Round corners */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+    background-color: #1a1a1a; /* Change background on hover */
+}
+/* Hover effect */
+.report-button:hover {
+    background-color: #ff4d4d; /* Change background on hover */
+    color: white; /* Change text color on hover */
+}
+.hover-effect {
+    color:red;
+}
+
+.hover-effect:hover {
+    color: orangered;
+}
+
+body.modal-open {
+    overflow: visible !important; /* Ensures the content remains scrollable */
+    padding-right: 0px !important; /* Prevents Bootstrap from adjusting padding */
+}
+
+p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+
+.pagination-container {
+    margin-top: 20px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+}
+
+    .pagination .page-item {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        padding: 8px 12px;
+        background: black;
+        color: white;
+        border: 1px solid red;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+
+        .pagination .page-link:hover {
+            background: red;
+            color: white;
+        }
+
+    .pagination .active .page-link {
+        background: red;
+        color: white;
+        font-weight: bold;
+    }
+    .pagination .page-item.disabled .page-link {
+        background: black !important;
+        color: white !important;
+        border: 1px solid red;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+

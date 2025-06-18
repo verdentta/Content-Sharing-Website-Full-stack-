@@ -1,0 +1,435 @@
+﻿@media (min-width: 768px) {
+    html {
+        overflow-y: scroll; /* Ensures scrollbar space is always reserved */
+        scrollbar-gutter: stable; /* Modern browsers use this */
+    }
+}
+/* makes the nav bar fixed */
+body {
+    padding-top: 67px; /* Match navbar height */
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    padding-bottom: 30px;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Mobile-friendly navbar adjustments */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background-color: #5f0706; /* Match navbar background */
+        padding: 10px;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .nav-item {
+        width: 100%;
+    }
+
+    .nav-link {
+        padding: 10px 15px;
+        color: #ffffff !important;
+    }
+
+    .searchArea {
+        max-width: 100%;
+        min-width: 0;
+        margin-top: 10px;
+    }
+
+    .upload-button, .dropdown-toggle {
+        margin-top: 10px;
+    }
+}
+
+
+
+/* Sticky footer adjustments for mobile */
+#sticky-footer {
+    position: relative;
+    height: auto;
+    padding: 10px 0;
+    text-align: center;
+    color: white;
+}
+
+
+
+.btn-secondary {
+    background-color: #800000 !important; /* Change button background color */
+    border-color: #ff4444 !important; /* Match border color */
+    color: #ffffff !important; /* Text color */
+    font-size: 1.3rem; /* Match given size */
+    padding: 5px 12px;
+    border-radius: 4px; /* Slightly rounded corners */
+    font-weight: bold;
+    transition: background 0.3s ease-in-out;
+}
+
+    .btn-secondary:hover {
+        background-color: #cc0000 !important; /* Darker red on hover */
+        border-color: #cc0000 !important;
+        color: #ffffff !important;
+    }
+
+.btn-light {
+    background-color: #000000 !important; /* Dark background */
+    border-color: #000000 !important;
+    color: #ffffff !important; /* White text */
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: background 0.3s ease-in-out, transform 0.2s ease;
+}
+
+    .btn-light:hover {
+        background-color: #800000 !important; /* Slightly lighter on hover */
+        border-color: #555555 !important;
+        transform: scale(1.05);
+    }
+
+
+/* Ensure navbar stays fixed and full-width */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 67px;
+    z-index: 1030;
+    background-color: #5f0706 !important;
+}
+
+
+.profile-button {
+    margin: 8px;
+}
+
+
+/* General Dropdown Styling */
+.dropdown-menu {
+    background-color: #5f0706; /* Dark purple background */
+    border-radius: 8px; /* Rounded corners */
+    padding: 10px; /* Add padding for spacing */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    border: none; /* Remove border */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+    /* Dropdown Items */
+    .dropdown-menu .dropdown-item {
+        color: #ffffff; /* Bright teal text */
+        font-size: 1rem; /* Adjust font size */
+        font-weight: bold; /* Optional: Make the text bold */
+        padding: 10px 15px; /* Add spacing */
+        border-radius: 5px; /* Rounded item hover effect */
+        transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition for hover */
+        font-family: 'Roboto', sans-serif;
+    }
+
+        /* Hover Effect for Dropdown Items */
+        .dropdown-menu .dropdown-item:hover {
+            background-color: #000000; /* Teal background on hover */
+            color: #ffffff; /* Dark purple text on hover */
+        }
+
+/* Optional: Adjust caret icon for the dropdown button */
+.dropdown-toggle i {
+    color: #ffffff;
+    font-size: 1.5rem; /* Increase size */
+    font-weight: bold; /* Optional: Make the text bold */
+    transition: transform 0.3s ease; /* Add rotation effect on hover */
+}
+
+/* Optional: Rotate icon slightly on hover */
+.dropdown-toggle:hover i {
+    transform: rotate(90deg); /* Rotate 90 degrees */
+}
+
+.dropdown-toggle::after {
+    display: none; /* Hides the default dropdown arrow */
+}
+
+/* Custom Spacing for Items */
+.dropdown-menu li {
+    margin-bottom: 5px; /* Add spacing between items */
+}
+
+    .dropdown-menu li:last-child {
+        margin-bottom: 0; /* Remove spacing from the last item */
+    }
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Change color of the navbar-brand */
+.navbar-brand {
+    color: #ffffff !important; /* Replace with your desired color */
+    font-weight: bold; /* Optional: Make the text bold */
+    font-size: 1.5rem; /* Optional: Adjust font size */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: Add a shadow effect */
+}
+
+    /* Optional: Add hover effect */
+    .navbar-brand:hover {
+        color: #f6000d !important; /* Change color on hover */
+        text-decoration: none; /* Remove underline */
+    }
+
+
+
+
+
+.searchArea {
+    display: flex;
+    align-items: center;
+    border-radius: 20px;
+    max-width: 500px;
+    min-width: 250px;
+    padding: 5px 10px;
+    gap: 5px;
+    background-color: #6f42c1; /* Match navbar color */
+}
+
+.searchBarInputBox {
+    border: none;
+    flex-grow: 1;
+    color: white;
+    outline: none;
+    font-size: 1rem;
+    padding: 5px;
+    background: transparent; /* Blend with navbar */
+}
+
+.searchButton {
+    background-color: white;
+    color: #1a1a2e;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .searchButton:hover {
+        background-color: red;
+        color: white;
+    }
+
+/* Ensure the icon is vertically centered */
+
+.search-icon-button i {
+    font-size: 1.25rem; /* Adjust the size of the icon */
+}
+
+.search-icon-button {
+    display: flex;
+    align-items: center;
+    background: transparent; /* Optional: Match the navbar background */
+    border: none; /* Remove default button border */
+    padding: 0px; /* Adjust padding for proper sizing */
+    font-size: 0.25rem; /* Adjust the size of the icon */
+    color: white; /* Ensure it matches your theme */
+    margin-right: 30px; /* Add spacing between the icon and the search bar */
+}
+
+    .search-icon-button:hover {
+        color: red; /* Add a hover effect for interactivity */
+    }
+
+    .search-icon-button:focus {
+        outline: none; /* Remove focus outline */
+    }
+
+#searchCollapse {
+    width: 100%;
+    max-width: 500px; /* Limit the max width */
+    margin-top: -10px; /* Remove margin that pushes the content down */
+    margin-right: 9px; /* Remove margin that pushes the content down */
+    height: 0; /* Set initial height to zero */
+    overflow: hidden; /* Hide overflowing content */
+    transition: all 0.3s ease-in-out; /* Smooth transition */
+}
+
+    #searchCollapse.show {
+        height: auto; /* Allow the content to expand only */
+        overflow: visible; /* Display the content when open */
+    }
+
+
+
+/* Styling for the layout with ads */
+.page-layout {
+    display: grid;
+    grid-template-columns: 0.75fr 3fr 0.75fr; /* Adjust ad and main content sizes */
+    gap: 10px;
+    width: 100%;
+    position: relative; /* Ensure layout spans the viewport */
+}
+
+.ad-slot1 {
+    position: fixed;
+    top: 105px; /* Ensure it doesn't overlap the navbar */
+    left: 20px; /* Keep it aligned to the left */
+    background-color: transparent;
+    /*border: 1px dashed #ccc;*/
+    height: 750px;
+    width: 280px; /* Adjust width */
+    text-align: center;
+    z-index: 1000; /* Ensure it stays above other elements */
+}
+
+.ad-slot2 {
+    position: fixed;
+    top: 105px; /* Ensure it doesn't overlap the navbar */
+    right: 20px; /* Keep it aligned to the right */
+    background-color: transparent;
+    /*border: 1px dashed #ccc;*/
+    height: 750px;
+    width: 280px; /* Adjust width */
+    text-align: center;
+    z-index: 1000; /* Ensure it stays above other elements */
+}
+
+.main-content {
+    grid-column: 2; /* Ensure the content occupies the second (middle) column */
+    padding: 0 15px;
+}
+
+.ad-slot1 img {
+    display: block; /* Removes extra space from inline elements */
+    width: 100%; /* Ensures it fits within the ad slot */
+    height: 100%; /* Matches the height of the container */
+    /*object-fit: cover;*/ /* Ensures the image scales to fill the container without distortion */
+    margin: 0; /* Removes any default margin */
+    padding: 0; /* Removes padding */
+    border: none; /* Ensures no border conflicts */
+}
+
+.ad-slot2 img {
+    display: block; /* Removes extra space from inline elements */
+    width: 100%; /* Ensures it fits within the ad slot */
+    height: 100%; /* Matches the height of the container */
+    /*object-fit: cover;*/ /* Ensures the image scales to fill the container without distortion */
+    margin: 0; /* Removes any default margin */
+    padding: 0; /* Removes padding */
+    border: none; /* Ensures no border conflicts */
+}
+
+
+@media (max-width: 1025px) {
+    .page-layout {
+        display: block; /* Switch from grid to block to simplify layout */
+        margin: 0;
+        padding: 0;
+    }
+
+    .ad-slot1,
+    .ad-slot2 {
+        display: none; /* Hide ads on small screens */
+    }
+
+    .main-content {
+        max-width: 100%; /* Utilize full width */
+        padding: 0 10px; /* Adjust padding */
+        width: 100%; /* Ensure full width */
+        margin: 0 auto; /* Center the content */
+        box-sizing: border-box; /* Include padding in width */
+    }
+}
+
+/* Upload Button */
+.upload-button {
+    border: 2px solid #e43cb8; /* Same color border */
+    font-size: 1.1rem; /* Maintain readable size */
+    font-weight: bold; /* Emphasize upload action */
+    padding: 8.7px 16px; /* Proper spacing */
+    border-radius: 5px; /* Rounded edges */
+    transition: all 0.3s ease-in-out;
+}
+
+/* Logout Button */
+.btn-logout {
+    background-color: transparent; /* No background to blend with navbar */
+    color: #ff4c4c; /* Neon red text */
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 2px solid transparent; /* Invisible border to maintain structure */
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.btn-logout:hover {
+    background-color: #ff4c4c; /* Neon red */
+    color: #000000; /* Black text when hovered */
+    border: 2px solid #ff4c4c; /* Visible border for contrast */
+    text-decoration: none; /* Remove link underline */
+}
+
+/* Active Click Effect */
+.btn-logout:active {
+    background-color: #d32f2f; /* Darker red on click */
+    border-color: #d32f2f;
+    color: #ffffff;
+}
+
+footer a {
+    color: #ff4747; /* Bright red to match theme */
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out;
+}
+
+    footer a:hover {
+        color: white; /* Darker red on hover */
+    }
+
+/* Apply styles to the entire scrollbar */
+::-webkit-scrollbar {
+    width: 10px; /* Adjust scrollbar width */
+}
+
+/* Track (background of the scrollbar) */
+::-webkit-scrollbar-track {
+    background: #1a1a1a; /* Dark track to match your theme */
+    border-radius: 10px;
+}
+
+/* Handle (draggable part) */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff4d4d, #cc0000); /* Gradient effect */
+    border-radius: 10px;
+    transition: background 0.3s ease-in-out;
+}
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #ff6666, #ff0000);
+    }
+
+/* Optional: Scrollbar buttons (arrows at top/bottom) */
+::-webkit-scrollbar-button {
+    display: none; /* Hides the up/down arrows */
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin; /* Adjust width */
+    scrollbar-color: #ff4d4d #1a1a1a; /* thumb color | track color */
+}
+

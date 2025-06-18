@@ -1,0 +1,658 @@
+﻿/* General Page Styling */
+body {
+    background-color: #000000; /* Pure black */
+    color: #f8f9fa; /* Light grey text */
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Card Styling */
+.card {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #800000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    width: 100%; /* Full width on mobile */
+    max-width: 100%; /* Prevent overflow */
+}
+
+
+/* Related Content Card Styling */
+.related-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 10px;
+    border: 1px solid #800000;
+    overflow: hidden;
+    background-color: #5f0706;
+    width: 100%;
+    max-width: 280px;
+}
+
+    .related-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0px 0px 15px rgba(255, 0, 0, 0.5); /* Red glow */
+        animation: pulseGlow 1.2s forwards;
+    }
+
+@keyframes pulseGlow {
+    from {
+        box-shadow: 0 0 15px 2px rgba(255, 0, 0, 0.4);
+    }
+
+    to {
+        box-shadow: 0 0 30px 8px rgba(255, 0, 0, 0.8);
+    }
+}
+
+.related-media-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
+}
+
+.related-card-img-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure proportional scaling */
+    background-color: #333333; /* Dark grey background */
+}
+
+@media (max-width: 576px) {
+    .related-card {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* Related Card Title */
+.related-card-title {
+    font-size: 15px;
+    color: white;
+    min-height: 58px;
+    max-height: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
+    margin-top: 17px; /* Add space above the title */
+}
+
+/* Related Content Header */
+.related-content-header {
+    font-size: 1.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    text-align: center;
+    color: #ff6666; /* Softer red */
+    text-shadow: 1px 1px 5px rgba(255, 68, 68, 0.5);
+    padding: 8px 16px;
+    border-radius: 6px;
+    display: block;
+    margin: 15px auto;
+    text-align: center;
+    width: fit-content;
+}
+
+@media (max-width: 576px) {
+    .related-card-title {
+        font-size: 14px;
+    }
+}
+
+/* Related Text Muted */
+.related-text-muted {
+    color: white !important;
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+}
+
+/* Related Card Body */
+.related-card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .related-card-body small {
+        margin-top: auto;
+    }
+
+/* Related Hover Effect */
+.related-card.related-clickable-content:hover .related-play-button {
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Related Play Button */
+.related-play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: url('/default/play.png') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+}
+
+@media (max-width: 576px) {
+    .card {
+        margin-top: 1rem; /* Reduced margin for mobile */
+    }
+}
+
+body.modal-open {
+    padding-right: 0 !important;
+    overflow: hidden !important;
+}
+
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 1.2rem; /* Smaller title on mobile */
+    }
+}
+
+/* Carousel Container with Aspect Ratio */
+#fixedCarouselContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    overflow: hidden; /* Back to hidden to avoid scrollbars */
+    height: 0;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio (9 / 16 * 100) */
+}
+
+    #fixedCarouselContainer video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+    #fixedCarouselContainer img {
+        position: absolute;
+        top: 50%; /* Move to the vertical center */
+        left: 50%; /* Move to the horizontal center */
+        transform: translate(-50%, -50%); /* Adjust back by half its size */
+        max-width: 100%; /* Limit width to container */
+        max-height: 100%; /* Limit height to container */
+        object-fit: contain; /* Preserve aspect ratio without stretching */
+        width: auto; /* Allow natural width */
+        height: auto; /* Allow natural height */
+    }
+
+
+
+
+@media (max-width: 576px) {
+    #fixedCarouselContainer {
+        min-height: 150px; /* Adjust for smaller screens */
+    }
+}
+
+/* Card Header (Title) */
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white; /* Magenta */
+}
+
+/* Like, Share, Comment, Report Buttons */
+#like-button, #share-button, #comment-button, .flag-button {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 8px 12px; /* Reduced padding for mobile */
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+
+
+/* Button Layout */
+.card-body .d-flex {
+    gap: 0.5rem; /* Reduced gap on mobile */
+}
+
+@media (max-width: 576px) {
+    .card-body .d-flex {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+}
+
+#like-button {
+    border: 2px solid red; /* Neon green */
+    background-color: transparent;
+    color: #ffffff;
+}
+
+    #like-button.btn-primary {
+        background-color: #10f216; /* Neon green */
+        border: 2px solid #10f216; /* Neon green */
+        color: #ffffff;
+    }
+
+    #like-button:hover {
+        background-color: #10f216; /* Neon green */
+        transform: scale(1.05);
+        border: 2px solid #10f216; /* Neon green */
+    }
+
+/* Share Button */
+#share-button {
+    border: 2px solid red; /* Magenta */
+    background-color: transparent;
+    color: #ffffff;
+}
+
+    #share-button:hover {
+        background-color: #e91ec9;
+        border: 2px solid #e91ec9; /* Magenta */
+        color: #000000;
+    }
+
+/* Comment Button */
+#comment-button {
+    border: 2px solid red; /* Teal */
+    background-color: transparent;
+    color: #ffffff;
+}
+
+    #comment-button:hover {
+        background-color: #43d9e8;
+        color: #000000;
+        border: 2px solid #43d9e8; /* Teal */
+    }
+
+/* Report (Flag) Button */
+.flag-button {
+    border: 2px solid red; /* Gold */
+    background-color: transparent;
+    color: #ffffff;
+}
+
+    .flag-button:hover {
+        background-color: #fce803;
+        color: #000000;
+        border: 2px solid #fce803; /* Gold */
+    }
+
+/* Uploaded Date Text */
+.card-text strong {
+    color: #fce803; /* Gold */
+}
+
+/* Author Name Link */
+.card-text a {
+    color: orangered; /* Teal */
+    font-weight: bold;
+}
+
+    .card-text a:hover {
+        color: darkred; /* Magenta */
+    }
+
+/* Comments Section */
+#comments-container {
+    background-color: #121212; /* Darker background */
+    border: 1px solid #e61324 !important;
+    border-radius: 5px;
+    padding: 10px;
+    color: #ffffff;
+    max-height: 150px; /* Reduced for mobile */
+}
+
+@media (max-width: 576px) {
+    #comments-container {
+        max-height: 120px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Comments List */
+.list-group-item {
+    background-color: #1a1a1a; /* Dark background */
+    color: #f8f9fa;
+    border: none;
+}
+
+.list-group-item a {
+    background-color: #1a1a1a; /* Dark background */
+    color: yellow;
+    border: none;
+}
+
+/* Highlighted New Comments */
+.new-comment-highlight {
+    animation: highlight 1s ease-in-out;
+}
+
+@keyframes highlight {
+    from {
+        background-color: #800000; /* Deep red */
+    }
+
+    to {
+        background-color: transparent;
+    }
+}
+
+/* Tags Section */
+.text-primary {
+    color: red !important; /* Magenta for emphasis */
+    font-weight: bold;
+}
+
+/* Tag Box */
+.card.shadow-sm {
+    background-color: #121212; /* Dark tag background */
+    border: 1px solid #e91ec9; /* Magenta border */
+}
+
+    .card.shadow-sm .card-text {
+        color: #f8f9fa;
+    }
+
+/* Takedown Modal */
+.modal-content {
+    background-color: #1a1a1a; /* Dark modal background */
+    color: #f8f9fa;
+    border: 1px solid #800000; /* Deep red border */
+}
+
+/* Takedown Modal Text */
+.modal-body p {
+    color: #ffffff;
+}
+
+.modal-body a {
+    color: orangered; /* Magenta link */
+    text-decoration: underline;
+}
+
+    .modal-body a:hover {
+        color: red; /* Teal */
+    }
+
+/* Submit and Cancel Buttons in Modal */
+.btn-danger {
+    background-color: orange;
+    border-color: #e91ec9;
+}
+
+    .btn-danger:hover {
+        background-color: red;
+        border-color: black;
+    }
+
+.btn-secondary {
+    background-color: red;
+    border-color: #800000;
+}
+
+    .btn-secondary:hover {
+        background-color: #e91ec9;
+        border-color: #e91ec9;
+    }
+
+/* Targeting all reply buttons */
+.reply-button {
+    color: #ff4d4d; /* Change text color */
+    font-size: 0.7rem;
+    text-decoration: none; /* Remove underline */
+    border: 1px solid #ff4d4d; /* Add a red border */
+    padding: 1px 12px; /* Add padding */
+    border-radius: 5px; /* Round corners */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+    background-color: #1a1a1a;
+}
+
+    /* Hover effect */
+    .reply-button:hover {
+        background-color: #ff4d4d; /* Change background on hover */
+        color: white; /* Change text color on hover */
+    }
+
+    /* Style the form group */
+.form-group {
+    margin-bottom: 15px; /* Add spacing below */
+}
+
+/* Dark Theme Textarea */
+    .form-group textarea {
+        background-color: #1a1a1a; /* Dark background */
+        color: white; /* Light text color */
+        border: 1px solid #444; /* Subtle border */
+        padding: 8px; /* Add padding */
+        border-radius: 5px; /* Rounded edges */
+        font-size: 1rem; /* Set font size */
+        font-family: 'Arial', sans-serif; /* Match font */
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
+
+@media (max-width: 576px) {
+    .form-group textarea {
+        font-size: 0.9rem;
+        padding: 6px;
+        rows: 2;
+    }
+}
+
+/* Button Layout */
+.button-group {
+    gap: 0.5rem; /* Consistent spacing */
+    justify-content: center; /* Center buttons on mobile if needed */
+}
+
+@media (max-width: 576px) {
+    .button-group {
+        flex-direction: row !important; /* Force horizontal on mobile */
+        justify-content: center; /* Center the row */
+        flex-wrap: wrap; /* Allow wrapping if screen is too narrow */
+    }
+
+    #like-button, #share-button, #comment-button, .flag-button {
+        font-size: 0.9rem; /* Smaller font for mobile */
+        padding: 6px 10px; /* Reduced padding */
+        min-width: 40px; /* Ensure buttons have a minimum width */
+    }
+}
+
+/* Toast Notification */
+.position-fixed.top-0.start-50.translate-middle-x {
+    top: 10px; /* Adjust for mobile */
+}
+
+@media (max-width: 576px) {
+    .position-fixed.top-0.start-50.translate-middle-x {
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* Placeholder Styling */
+.form-group textarea::placeholder {
+    color: #888888; /* Light gray placeholder */
+    font-style: italic; /* Optional */
+}
+
+/* Focus Effect */
+ .form-group textarea:focus {
+      border-color: brown; /* Red border on focus */
+      outline: none; /* Remove default focus outline */          
+      background-color: #1a1a1a; /* Slightly lighter background */          
+      color: white;          
+  }
+
+.btn-primary {
+    background-color: #800000; /* Dark red background */
+    border: 1px solid #a00000; /* Slightly darker red border */
+    color: #ffffff; /* White text */
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+    .btn-primary:hover {
+        background-color: #a00000; /* Slightly lighter red on hover */
+        transform: scale(1.05); /* Small scale effect */
+    }
+
+    .btn-primary:active {
+        background-color: #600000; /* Even darker red when clicked */
+        transform: scale(0.98); /* Slightly shrink when clicked */
+    }
+
+.content-metadata {
+    background-color: #1a1a1a; /* Dark background */
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+/* Tags Section */
+.tags-container {
+    background-color: #2b2b2b; /* Slightly lighter dark background */
+    padding: 10px;
+    border-radius: 0px;
+    text-align: center;
+}
+
+/* Tag Items */
+.tag-item {
+    background-color: #800000; /* Dark red */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+}
+
+@media (max-width: 576px) {
+    .tag-item {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+}
+
+
+/* Description Box */
+.description-box {
+    background-color: #292929; /* Dark gray to stand out */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 0px;
+    color: #f8f9fa;
+    text-align: left;
+}
+
+@media (max-width: 576px) {
+    .description-box {
+        padding: 5px;
+        font-size: 0.9rem;
+    }
+}
+
+col-md-6 text-center a{
+    color:white;
+}
+
+/* Metadata Box - Surrounds "Posted by" & "Uploaded on" */
+.metadata-box {
+    background-color: #1a1a1a; /* Darker shade for contrast */
+    padding: 12px;
+    border-radius: 8px; /* Smooth edges */
+    margin-top: 10px;
+    margin-bottom: 15px;
+
+}
+
+/* Author & Upload Date - Flex alignment inside the box */
+.author-container, .upload-date {
+    padding: 8px;
+    background-color: #2a2a2a; /* Slightly lighter than the metadata box */
+}
+
+@media (max-width: 576px) {
+    .author-container, .upload-date {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* Author Profile Link */
+.author-link {
+    color: #ff4757; /* Bright red */
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease;
+}
+
+    .author-link:hover {
+        color: #ff6b81;
+        text-shadow: 0 0 8px rgba(255, 107, 129, 0.8);
+        transform: scale(1.1);
+    }
+
+/* Profile Picture Styling */
+.author-profile-pic {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ff4757;
+    transition: transform 0.3s ease;
+}
+
+.author-link:hover .author-profile-pic {
+    transform: scale(1.2);
+}
+
+/* Uploaded Date */
+.upload-date {
+    color: #f8f9fa; /* Light text color */
+    font-weight: bold;
+}
+
+.report-comment-button {
+    color: #ff4d4d; /* Change text color */
+    font-size: 0.7rem;
+    text-decoration: none; /* Remove underline */
+    border: 1px solid #ff4d4d; /* Add a red border */
+    padding: 1px 12px; /* Add padding */
+    border-radius: 5px; /* Round corners */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effect */
+    background-color: #1a1a1a;
+}
+/* Hover effect */
+    .report-comment-button:hover {
+        background-color: #ff4d4d; /* Change background on hover */
+        color: white; /* Change text color on hover */
+    }
+

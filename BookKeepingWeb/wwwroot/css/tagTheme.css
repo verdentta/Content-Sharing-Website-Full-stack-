@@ -1,0 +1,454 @@
+﻿/* Play button styling */
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: url('/default/play.png') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+}
+
+/* Global Dark Theme */
+body {
+    background-color: #000000;
+    color: #f8f9fa;
+    font-family: 'Roboto', sans-serif;
+}
+
+    body.modal-open {
+        overflow: visible !important; /* Ensures the content remains scrollable */
+        padding-right: 0px !important; /* Prevents Bootstrap from adjusting padding */
+    }
+
+/* Tags Section */
+.tag-area {
+    background-color: #1a1a1a;
+    border: 1px solid #ff4444;
+    border-radius: 10px;
+    padding: 18px 25px 20px;
+    box-shadow: 0px 0px 15px rgba(255, 68, 68, 0.2);
+}
+
+@media (max-width: 768px) {
+    .tag-area {
+        padding: 10px 15px; /* Reduced padding for mobile */
+    }
+}
+
+.tag-area :where(li, li i, .details) {
+    display: flex;
+    align-items: center;
+}
+
+.tag-area .context {
+    margin: 10px 0;
+}
+
+.content {
+    font-size: 15px;
+}
+
+    .content .ul-tag {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 7px;
+        margin: 12px 0;
+        border-radius: 5px;
+        border: 1px solid #000000;
+    }
+
+        .content .ul-tag .li-tag {
+            margin: 4px 3px;
+            list-style: none;
+            border-radius: 5px;
+            padding: 5px 8px 5px 10px;
+            border: 1px solid #000000;
+            background-color: #ff4444;
+            color: white;
+        }
+
+            .content .ul-tag .li-tag i {
+                height: 20px;
+                width: 20px;
+                margin-left: 8px;
+                font-size: 12px;
+                cursor: pointer;
+                border-radius: 50%;
+                justify-content: center;
+            }
+
+        .content .ul-tag .tag-input {
+            flex: 1;
+            padding: 5px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+@media (max-width: 768px) {
+    .content .ul-tag .tag-input {
+        font-size: 14px; /* Smaller input text on mobile */
+    }
+}
+
+.tag-area .details {
+    justify-content: space-between;
+}
+
+.details .remove-button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 9px 15px;
+    border-radius: 5px;
+    transition: background 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .details .remove-button {
+        padding: 6px 12px; /* Reduced padding for mobile */
+    }
+}
+
+.tag-container {
+    display: grid;
+    grid-template-columns: repeat(9, minmax(120px, 1fr));
+    gap: 10px;
+    max-width: 800px;
+}
+
+@media (max-width: 768px) {
+    .tag-container {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* Single column on mobile */
+        max-width: 100%; /* Full width on mobile */
+    }
+}
+
+.tag-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Load More Button Styling */
+.load-more-btn {
+    margin-top: 10px;
+    background-color: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 14px;
+}
+
+    .load-more-btn:hover {
+        background-color: #5a6268;
+    }
+
+@media (max-width: 768px) {
+    .load-more-btn {
+        font-size: 12px; /* Smaller text on mobile */
+        padding: 6px 12px; /* Reduced padding */
+    }
+}
+
+/* Hide tags inside details by default */
+.tag-details {
+    margin-top: 10px;
+}
+
+    .tag-details[open] .load-more-btn {
+        display: none;
+    }
+
+/* Styling the checkbox container */
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+    .checkbox-container {
+        gap: 10px; /* Reduced gap on mobile */
+    }
+}
+
+/* Checkbox wrapper */
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .checkbox-wrapper {
+        gap: 5px; /* Reduced gap on mobile */
+    }
+}
+
+/* Checkbox input */
+.checkbox-wrapper input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ff4444;
+    border-radius: 5px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+    .checkbox-wrapper input[type="checkbox"]:checked {
+        background-color: #ff4444;
+        border-color: #ff7777;
+    }
+
+        .checkbox-wrapper input[type="checkbox"]:checked::after {
+            content: "✔";
+            font-size: 14px;
+            color: #fff;
+            position: absolute;
+            transform: scale(1.2);
+            text-align: center;
+            line-height: 18px;
+        }
+
+@media (max-width: 768px) {
+    .checkbox-wrapper input[type="checkbox"] {
+        width: 18px;
+        height: 18px; /* Slightly smaller on mobile */
+    }
+}
+
+/* Label for the checkbox */
+.checkbox-wrapper label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #f8f9fa;
+    transition: color 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+    .checkbox-wrapper label {
+        font-size: 14px; /* Smaller text on mobile */
+    }
+}
+
+.checkbox-wrapper:hover label {
+    color: #b3a1ff;
+}
+
+/* Progress Bar */
+#progress-container {
+    background-color: #222;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.progress {
+    background-color: #444;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    background-color: #ff4444;
+}
+
+/* Centered Container for Upload Form */
+.container {
+    background-color: #121212;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 0 auto; /* Center the container */
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 90%; /* Full width with padding on mobile */
+        padding: 20px; /* Reduced padding */
+    }
+}
+
+/* Form Labels */
+.form-label {
+    font-weight: bold;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .form-label {
+        font-size: 0.9rem; /* Smaller text on mobile */
+    }
+}
+
+/* Input Fields */
+.form-control {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: #ffffff;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+    .form-control:focus {
+        background-color: #222;
+        border-color: #ff4444;
+        color: #ffffff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(255, 68, 68, 0.5);
+    }
+
+@media (max-width: 768px) {
+    .form-control {
+        font-size: 0.9rem; /* Smaller text on mobile */
+        padding: 8px; /* Reduced padding */
+    }
+}
+
+/* File Upload */
+input[type="file"] {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    padding: 8px;
+    color: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    input[type="file"] {
+        padding: 6px; /* Reduced padding */
+    }
+}
+
+/* Tag List Styling */
+.ul-tag {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 7px;
+    margin: 12px 0;
+    border-radius: 5px;
+    border: 1px solid #444;
+}
+
+@media (max-width: 768px) {
+    .ul-tag {
+        padding: 5px; /* Reduced padding on mobile */
+    }
+}
+
+.ul-tag .li-tag {
+    background-color: #ff4444;
+    color: white;
+    margin: 4px 3px;
+    list-style: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    border: none;
+}
+
+@media (max-width: 768px) {
+    .ul-tag .li-tag {
+        font-size: 0.9rem; /* Smaller text on mobile */
+        padding: 4px 8px; /* Reduced padding */
+    }
+}
+
+/* Upload Button */
+.btn-primary {
+    background-color: #ff4444;
+    border: none;
+    color: #ffffff;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+    display: block;
+}
+
+    .btn-primary:hover {
+        background-color: #cc0000;
+    }
+
+@media (max-width: 768px) {
+    .btn-primary {
+        font-size: 0.9rem; /* Smaller text on mobile */
+        padding: 8px 12px; /* Reduced padding */
+    }
+}
+
+/* Secondary Button */
+.btn-secondary {
+    background-color: #444;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+}
+
+    .btn-secondary:hover {
+        background-color: #555;
+    }
+
+@media (max-width: 768px) {
+    .btn-secondary {
+        font-size: 0.9rem; /* Smaller text on mobile */
+        padding: 8px 12px; /* Reduced padding */
+    }
+}
+
+/* Error Messages */
+.text-danger {
+    color: #ff5555;
+}
+
+@media (max-width: 768px) {
+    .text-danger {
+        font-size: 0.9rem; /* Smaller text on mobile */
+    }
+}
+
+/* Modal Styling */
+.modal-content {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #ff4444;
+}
+
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 0; /* Full width on mobile */
+    }
+}
+
+/* Title Styling */
+.edit-content-title {
+    font-size: 2rem;
+    color: #ff4747;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 6px rgba(255, 71, 71, 0.3);
+    border-bottom: 2px solid rgba(255, 71, 71, 0.6);
+    padding-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+    .edit-content-title {
+        font-size: 1.5rem; /* Smaller title on mobile */
+    }
+}

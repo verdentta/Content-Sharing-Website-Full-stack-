@@ -1,0 +1,329 @@
+﻿@model BookKeepingWeb.Models.ForumThread
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<!-- Link to CSS -->
+<link rel="stylesheet" href="~/css/forumdetail.css" />
+
+<br />
+<div class="thread-container">
+    @if (ViewBag.CurrentPage == 1)
+    {
+    <h2 class="thread-title">@Model.Title</h2>
+    <p class="thread-meta">
+        <strong>Posted on:</strong> @Model.CreatedDate.ToShortDateString() by
+        <a href="@Url.Action("PublicProfile", "Profile", new { userId = Model.CreatedByUserId })" class="author-link">
+            @if (!string.IsNullOrEmpty(Model.CreatedByUser?.ProfilePicturePath))
+            {
+                <img src="@Model.CreatedByUser.ProfilePicturePath" alt="Profile Picture" class="author-profile-pic">
+            }
+            <span>@Model.CreatedByUser?.ScreenName</span>
+        </a>
+    </p>
+
+    <p class="thread-description">@Html.Raw(Model.Description.Replace("\n", "<br>"))</p>
+
+    @if (!string.IsNullOrEmpty(Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" class="thread-image">
+    }
+
+    <hr>
+    }
+    <h4>Comments</h4>
+    <hr>
+
+    <!-- Display Comments -->
+    @foreach (var comment in Model.Comments.OrderBy(c => c.CreatedDate))
+    {
+        <div class="comment" id="comment-@comment.Id">
+            <p class="comment-author">
+                <a href="@Url.Action("PublicProfile", "Profile", new { userId = comment.CreatedByUserId })" class="comment-author-link">
+                    @if (!string.IsNullOrEmpty(Model.CreatedByUser?.ProfilePicturePath))
+                    {
+                        <img src="@comment.CreatedByUser.ProfilePicturePath" alt="Profile Picture" class="comment-profile-pic">
+                    }
+                    else
+                    {
+                        <img src="/default/default-profile.png" alt="Default Profile Picture" class="comment-profile-pic">
+                    }
+                    <span>@comment.CreatedByUser?.ScreenName</span>
+                </a>
+                <span class="comment-date">(@comment.CreatedDate.ToShortDateString())</span>
+            </p>
+
+            <p class="comment-content">@comment.Content</p>
+
+            <!-- 🔄 Reply Button -->
+            <button class="reply-button"
+                    data-username="@comment.CreatedByUser?.ScreenName">
+                Reply
+            </button>
+
+            <!-- 🚩 Report Button (Opens Modal) -->
+            <button class="report-button"
+                    data-comment-id="@comment.Id"
+                    data-comment-text="@comment.Content"
+                    data-bs-toggle="modal"
+                    data-bs-target="#commentReportModal">
+                🚩
+            </button>
+
+            
+
+            <hr>
+        </div>
+    }
+
+    <!-- Comment Form -->
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="comment-section">
+            <form asp-action="AddComment" asp-controller="Forums" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="threadId" value="@Model.Id" />
+
+                <div class="mb-3">
+                    <label for="commentContent" class="form-label">Add a Comment:</label>
+                    <textarea name="content" placeholder="Write a comment..." maxlength="500" id="commentContent" class="form-control" oninput="updateCommentCount()"></textarea>
+                    <small id="CommentCounter" class="text-muted">0 / 500 characters</small>
+                </div>
+
+                <button type="submit" class="btn custom-comment-btn">Post Comment</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <p>
+            <a class="hover-effect" asp-area="Identity" asp-page="/Account/Login">Log in</a> to post a comment.
+        </p>
+    }
+</div>
+
+<div class="pagination-container text-center mt-4">
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                @{
+                    int currentPage = Convert.ToInt32(ViewBag.CurrentPage ?? 1);
+                    int totalPages = Convert.ToInt32(ViewBag.TotalPages ?? 1);
+                    int pagesToShow = 5;
+                    int half = pagesToShow / 2;
+
+                    int startPage = Math.Max(1, currentPage - half);
+                    int endPage = Math.Min(totalPages, startPage + pagesToShow - 1);
+
+                    // Adjust startPage if the last group has fewer pages than pagesToShow
+                    if (endPage - startPage + 1 < pagesToShow)
+                    {
+                        startPage = Math.Max(1, endPage - pagesToShow + 1);
+                    }
+                }
+
+                <!-- Previous Arrow -->
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("DetailedThread", "Forums", new { id = Model.Id, page = currentPage - 1 })">«</a>
+                </li>
+
+                <!-- Page Numbers -->
+                @for (int i = startPage; i <= endPage; i++)
+                {
+                    <li class="page-item @(currentPage == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("DetailedThread", "Forums", new { id = Model.Id, page = i })">@i</a>
+                    </li>
+                }
+
+                <!-- Next Arrow -->
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("DetailedThread", "Forums", new { id = Model.Id, page = currentPage + 1 })">»</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
+
+<!-- 🛑 Report Forum Comment Modal -->
+<div class="modal fade" id="commentReportModal" tabindex="-1" aria-labelledby="commentReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <!-- Added modal-dialog-centered -->
+        <div class="modal-content">
+            <div class="modal-body">
+                <form id="commentReportForm">
+                    @Html.AntiForgeryToken()
+                    <h4>Report Comment</h4>
+                    <p>Why are you reporting this comment?</p>
+
+                    <select id="reportReason" class="form-select">
+                        <option value="">-- Select Reason --</option>
+                        <option value="Spam">Spam</option>
+                        <option value="Hate Speech">Hate Speech</option>
+                        <option value="Harassment">Harassment</option>
+                        <option value="Illegal Content">Illegal Content</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <textarea id="reportDetails" oninput="updateReportCount()" class="form-control mt-2" maxlength="150" placeholder="Optional: Provide more details"></textarea>
+                    <small id="ReportCounter" class="text-muted">0 / 150 characters</small>
+
+                    <small id="reportDescriptionError" class="text-danger" style="display: none;">
+                        ⚠️ Please select a reason.
+                    </small>
+
+                    <input type="hidden" id="reportCommentId" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="submitCommentReport">Submit Report</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 🚨 When a report button is clicked, populate the modal with the correct comment ID
+            document.querySelectorAll(".report-button").forEach(button => {
+                button.addEventListener("click", function () {
+                    let commentId = this.getAttribute("data-comment-id");
+                    let commentText = this.getAttribute("data-comment-text");
+
+                    document.getElementById("reportCommentId").value = commentId;
+                    document.getElementById("reportDetails").value = "";
+                    document.getElementById("reportReason").value = "";
+                    document.getElementById("reportDescriptionError").style.display = "none";
+                });
+            });
+
+            // 🚨 Handle Report Submission
+            document.getElementById("submitCommentReport").addEventListener("click", function () {
+                let commentId = document.getElementById("reportCommentId").value;
+                let reportReason = document.getElementById("reportReason").value;
+                let additionalDetails = document.getElementById("reportDetails").value;
+                const errorText = document.getElementById("reportDescriptionError");
+
+                // 🚨 Show error if reason isn't selected
+                if (!reportReason) {
+                    errorText.style.display = "block";
+                    return;
+                } else {
+                    errorText.style.display = "none";
+                }
+
+                    // ✅ Declare modal BEFORE the fetch so it's accessible in all blocks
+            const modal = bootstrap.Modal.getInstance(document.getElementById("commentReportModal"));
+
+            fetch("/Forums/ReportForumComment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: JSON.stringify({
+                ForumCommentId: commentId,
+                ReportReason: reportReason,
+                AdditionalDetails: additionalDetails
+            })
+        })
+        .then(async response => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("commentReportModal"));
+                    // 🔁 Handle 429 rate-limiting
+            if (response.status === 429) {
+                try {
+                    const result = await response.json();
+                    modal.hide();
+                    if (result.redirectUrl) {
+                        window.location.href = result.redirectUrl;
+                    } else {
+                        showToast(result.message || "⛔ You're reporting too fast.");
+                    }
+                } catch {
+                    modal.hide();
+                    window.location.href = "/Home/RateLimit";
+                }
+                return;
+            }
+
+            let data;
+
+            try {
+                data = await response.json();
+            } catch (err) {
+                // Couldn't parse JSON
+                modal.hide();
+                showToast("You need to be logged in to make a report!");
+                return;
+            }
+
+            modal.hide();
+
+            if (!response.ok) {
+                // If it's a 401 or other error status, show toast using message from server
+                showToast(data.message || "❌ Something went wrong.");
+                return;
+            }
+
+            if (data.success) {
+                showToast("✅ Report submitted successfully.");
+                document.getElementById("commentReportForm").reset();
+            } else {
+                showToast("❌ " + data.message);
+            }
+        })
+        .catch(error => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById("commentReportModal"));
+            modal.hide();
+            console.error("Network error:", error);
+            showToast("❌ Network error. Please try again.");
+                });
+            });
+        });
+    </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 🚨 Handle Reply Button Click
+            document.querySelectorAll(".reply-button").forEach(button => {
+            button.addEventListener("click", function () {
+                let username = this.getAttribute("data-username");
+                let commentBox = document.getElementById("commentContent");
+
+                if (commentBox) {
+                    commentBox.scrollIntoView({ behavior: "smooth", block: "center" });
+                    
+                    
+                    if (commentBox.value.trim() === "") {
+                        commentBox.value = `@@${username} `;
+                    } else if (!commentBox.value.includes(`@@${username}`)) {
+                        commentBox.value += ` @@${username} `;
+                    }
+
+                    // Set focus on the input box
+                    setTimeout(() => commentBox.focus(), 500);
+                }
+            });
+        });
+    });
+</script>
+
+    <script>
+
+        function updateCommentCount() {
+            var input = document.getElementById("commentContent");
+            var counter = document.getElementById("CommentCounter");
+            counter.textContent = input.value.length + " / 500 characters";
+        }
+
+        function updateReportCount() {
+            var input = document.getElementById("reportDetails");
+            var counter = document.getElementById("ReportCounter");
+            counter.textContent = input.value.length + " / 150 characters";
+        }
+    </script>
+
+}

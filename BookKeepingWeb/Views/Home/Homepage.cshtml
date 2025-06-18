@@ -1,0 +1,285 @@
+﻿@{
+    ViewData["Title"] = "Homepage";
+}
+
+<link rel="stylesheet" href="~/css/homepage.css" />
+
+<!-- Full-screen overlay for age verification -->
+<div id="age-overlay">
+    <div id="age-card">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <p class="card-text mb-4" style="color: white;">Are you over the age of 18?</p>
+                <div class="d-flex justify-content-between">
+                    <button class="btn btn-yes" onclick="closeAgeCard(true)">Yes</button>
+                    <button class="btn btn-no" onclick="closeAgeCard(false)">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+
+    @if (ViewBag.LoadError != null)
+    {
+        <div class="alert alert-warning text-center">
+            @ViewBag.LoadError
+        </div>
+    }
+    
+
+    @if (ViewBag.MostLiked != null)
+    {
+        @if (ViewBag.LatestThread != null)
+        {
+            <div class="news-container mb-4">
+                <h2 class="section-title">📰 News</h2>
+                <p class="welcome-message">Welcome to the site! Check out the latest discussion below:</p>
+
+                <a href="@Url.Action("DetailedThread", "Forums", new { id = ViewBag.LatestThread.Id })" class="thread-link">
+                    <div class="thread-list-item">
+                        <div class="thread-title">@ViewBag.LatestThread.Title</div>
+                        <div class="thread-meta">
+                            Posted by <strong>@ViewBag.LatestThread.CreatedByUser.ScreenName</strong> on
+                            <span>@ViewBag.LatestThread.CreatedDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+
+        <h2 class="section-title">🔥 Most Liked Content</h2>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var content in ViewBag.MostLiked)
+            {
+                <div class="col">
+                    <a href="@Url.Action("Details", "Home", new { id = content.Id })" class="text-decoration-none">
+                        <div class="card">
+                            <div class="media-container">
+                                @if (content.ContentType == FileType.Image)
+                                {
+                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                         width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                }
+                                else if (content.ContentType == FileType.Video)
+                                {
+                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                         width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                    <div class="play-button"></div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@content.Title</h5>
+                                <p class="card-text">👍 @content.Likes | 👁 @content.Views</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+
+    @if (ViewBag.MostViewed != null)
+    {
+        <h2 class="section-title">👀 Most Viewed Content</h2>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var content in ViewBag.MostViewed)
+            {
+                <div class="col">
+                    <a href="@Url.Action("Details", "Home", new { id = content.Id })" class="text-decoration-none">
+                        <div class="card">
+                            <div class="media-container">
+                                @if (content.ContentType == FileType.Image || content.ContentType == FileType.Gif)
+                                {
+                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                         width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                }
+                                else if (content.ContentType == FileType.Video)
+                                {
+                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                         width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                    <div class="play-button"></div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@content.Title</h5>
+                                <p class="card-text">👍 @content.Likes | 👁 @content.Views</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+
+    @if (ViewBag.MostRecent != null)
+    {
+        <h2 class="section-title">📅 Recently Uploaded</h2>
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var content in ViewBag.MostRecent)
+            {
+                <div class="col">
+                    <a href="@Url.Action("Details", "Home", new { id = content.Id })" class="text-decoration-none">
+                        <div class="card">
+                            <div class="media-container">
+                                @if (content.ContentType == FileType.Image || content.ContentType == FileType.Gif)
+                                {
+                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                         width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                }
+                                else if (content.ContentType == FileType.Video)
+                                {
+                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                         data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                         width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                    <div class="play-button"></div>
+                                }
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@content.Title</h5>
+                                <p class="card-text">👍 @content.Likes | 👁 @content.Views</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (ViewBag.PaginatedContent != null)
+{
+    <h2 class="section-title">🎬 More Content</h2>
+    <div class="row row-cols-2 row-cols-md-4 g-3">
+        @foreach (var content in ViewBag.PaginatedContent)
+        {
+            <div class="col">
+                <a href="@Url.Action("Details", "Home", new { id = content.Id })" class="text-decoration-none">
+                    <div class="card">
+                        <div class="media-container">
+                            @if (content.ContentType == FileType.Image || content.ContentType == FileType.Gif)
+                            {
+                                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                     data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                     width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                            }
+                            else if (content.ContentType == FileType.Video)
+                            {
+                                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+                                     data-src="@content.ThumbnailPath" class="card-img-top lazy-load" alt="@content.Title"
+                                     width="200" height="200" style="object-fit: contain; background-color: #333333;" />
+                                <div class="play-button"></div>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@content.Title</h5>
+                            <p class="card-text">👍 @content.Likes | 👁 @content.Views</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+}
+
+<div class="pagination-container mt-4 d-flex justify-content-center">
+    <ul class="pagination">
+        @{
+            int currentPage = ViewBag.CurrentPage ?? 1; 
+            int totalPages = ViewBag.TotalPages ?? 1;   
+            int pagesToShow = 5;
+            int half = pagesToShow / 2;
+
+            int startPage = Math.Max(1, currentPage - half);
+            int endPage = Math.Min(totalPages, startPage + pagesToShow - 1);
+
+            // Adjust if we’re at the end and showing fewer pages
+            if (endPage - startPage + 1 < pagesToShow)
+            {
+                startPage = Math.Max(1, endPage - pagesToShow + 1);
+            }
+        }
+
+        <!-- Previous Arrow -->
+        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Homepage", "Home", new { page = currentPage - 1 })">«</a>
+        </li>
+
+        <!-- Page Numbers -->
+        @for (int i = startPage; i <= endPage; i++)
+        {
+            <li class="page-item @(currentPage == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Homepage", "Home", new { page = i })">@i</a>
+            </li>
+        }
+
+        <!-- Next Arrow -->
+        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Homepage", "Home", new { page = currentPage + 1 })">»</a>
+        </li>
+    </ul>
+</div>
+
+
+
+
+@section Scripts {
+    <script>
+        let lazyObserver; // make it scoped to the page
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const lazyImages = document.querySelectorAll("img.lazy-load");
+            const overlay = document.getElementById("age-overlay");
+
+            // Age verification
+            const isAgeVerified = localStorage.getItem("ageVerified") === "true";
+            if (!isAgeVerified) {
+                overlay.classList.add("active");
+                document.body.classList.add("no-scroll");
+            }
+
+            // Lazy Load Setup
+            if ("IntersectionObserver" in window) {
+                if (lazyObserver) {
+                    lazyObserver.disconnect(); // Prevent duplicate observers
+                }
+
+                lazyObserver = new IntersectionObserver(function (entries, observer) {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.remove("lazy-load");
+                            observer.unobserve(img); // Stop observing once loaded
+                        }
+                    });
+                }, {
+                    rootMargin: "150px"
+                });
+
+                lazyImages.forEach(img => {
+                    lazyObserver.observe(img);
+                });
+            } else {
+                // Fallback
+                lazyImages.forEach(img => img.src = img.dataset.src);
+            }
+        });
+
+        function closeAgeCard(isAdult) {
+            if (isAdult) {
+                localStorage.setItem("ageVerified", "true");
+                document.getElementById("age-overlay").classList.remove("active");
+                document.body.classList.remove("no-scroll");
+            } else {
+                window.location.href = "https://www.google.com";
+            }
+        }
+    </script>
+}

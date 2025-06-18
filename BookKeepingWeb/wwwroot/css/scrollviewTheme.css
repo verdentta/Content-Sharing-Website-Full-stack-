@@ -1,0 +1,564 @@
+﻿/* Reset body scrolling behavior */
+body {
+    background-color: black;
+    background-size: cover;
+    margin: 0;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    overflow-y: hidden; /* Prevent horizontal overflow */
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Ensure overlay is hidden by default testing, testing again! */
+#age-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black; /* Dark background */
+    display: none; /* Hide initially */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: url('/default/play.png') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+}
+
+/* Hover effect (unchanged) */
+.card.clickable-content:hover .play-button {
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Age verification card */
+#age-card {
+    background: #111; /* Dark background */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.8); /* Red glow */
+    width: 320px;
+    text-align: center;
+    border: 2px solid #ff0000;
+}
+
+    /* Override Bootstrap card background */
+    #age-card .card {
+        background: transparent !important; /* Make the Bootstrap card transparent */
+        border: none;
+    }
+
+    /* Text styling */
+    #age-card p {
+        color: #ffffff; /* White text for contrast */
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 15px;
+
+    }
+
+    /* Yes & No buttons */
+    #age-card .btn {
+        width: 45%;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 5px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Yes button */
+    #age-card .btn-yes {
+        background: #cc0000 !important;
+        border: 2px solid #ff4444 !important;
+        color: #fff !important;
+        padding: 10px 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        width: 100px;
+    }
+
+        #age-card .btn-yes:hover {
+            background: #ff4444 !important;
+            border-color: #ff0000 !important;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+    /* No button */
+    #age-card .btn-no {
+        background: #333 !important;
+        border: 2px solid #666 !important;
+        color: #fff !important;
+        padding: 10px 20px;
+        font-weight: bold;
+        text-transform: uppercase;
+        width: 100px;
+    }
+
+        #age-card .btn-no:hover {
+            background: #666 !important;
+            border-color: #999 !important;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+/* Ensure it's shown only when required */
+#age-overlay.active {
+    display: flex !important;
+}
+
+/* Hide overlay when user has verified age */
+.hidden {
+    display: none !important;
+}
+
+/* Prevent scrolling when overlay is active */
+body.no-scroll {
+    overflow: hidden;
+}
+
+
+.display-4 {
+    font-family: 'Poppins', sans-serif; /* Choose a modern and readable font */
+    font-size: 2.8rem; /* Adjust size for better visibility */
+    font-weight: bold; /* Make it stand out */
+    color: #ff4444; /* Red color */
+    text-shadow: 2px 2px 10px rgba(255, 68, 68, 0.5); /* Soft glow effect */
+    text-transform: uppercase; /* Make it all uppercase for impact */
+    letter-spacing: 1.5px; /* Space letters slightly for readability */
+    animation: pulse 1.8s infinite alternate; /* Add subtle animation */
+    font-family: Tahoma, Verdana, sans-serif;
+    align-content: center;
+}
+
+/* Media Query for Mobile */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 1.5rem; /* Reduce font size for mobile */
+        letter-spacing: 0.5px; /* Reduce spacing for compactness */
+        white-space: nowrap; /* Force single line */
+        overflow: hidden; /* Hide any overflow */
+        text-overflow: ellipsis; /* Add ellipsis if text is too long */
+        width: 100%; /* Ensure it takes full width */
+        text-align: center; /* Center the text */
+    }
+}
+
+
+/* Main Content Container */
+#content-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+#current-post {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh; /* Flexible height */
+    position: relative;
+    overflow: hidden; /* Maintain single-post focus */
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    background-color: black;
+    max-height: 90vh; /* Cap height to avoid overwhelming the screen */
+}
+
+/* Post Container */
+.post-container {
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100%; /* Match parent height */
+    transition: transform 0.5s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    background-color: black;
+    animation-duration: 0.25s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+    max-height: 100vh !important; /* Limit to viewport height */
+}
+
+    .post-container .card {
+        width: 100%;
+        background-color: transparent;
+        color: black;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    }
+
+    .post-container .card-body {
+        padding: 10px;
+        text-align: center;
+    }
+
+    .post-container img,
+    .post-container video {
+        max-height: 70vh !important; /* Limit to viewport height */
+        max-width: 100%;
+        width: auto;
+        height: auto;
+        border-radius: 10px;
+        object-fit: contain; /* Better scaling */
+    }
+
+    .post-container h5 {
+        color: white;
+        font-size: 1.25rem;
+        padding: 10px 0;
+    }
+
+    .post-container .d-flex {
+        flex-direction: row; /* Horizontal on desktop */
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap; /* Wrap buttons on mobile */
+    }
+
+    .post-container button {
+        margin: 5px 0;
+        min-width: 100px; /* Ensure buttons are tappable */
+    }
+
+    /* Hide scrollbar in Webkit browsers */
+    .post-container::-webkit-scrollbar {
+        display: none;
+    }
+
+/* Slide Animations */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+
+/* Glow Animation */
+@keyframes like-glow {
+    0% {
+        box-shadow: 0 0 0px rgba(255, 255, 255, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+
+    100% {
+        box-shadow: 0 0 0px rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Modal Styling (unchanged) */
+.modal-content {
+    background-color: #1a1a1a;
+    color: #f8f9fa;
+    border: 1px solid #800000;
+}
+
+body.modal-open {
+    overflow: visible !important; /* Ensures the content remains scrollable */
+    padding-right: 0px !important; /* Prevents Bootstrap from adjusting padding */
+}
+
+
+
+.modal-body p {
+    color: #ffffff;
+}
+
+.modal-body a {
+    color: orangered;
+    text-decoration: underline;
+}
+
+    .modal-body a:hover {
+        color: red;
+    }
+
+.btn-danger {
+    background-color: orange;
+    border-color: #e91ec9;
+}
+
+    .btn-danger:hover {
+        background-color: red;
+        border-color: black;
+    }
+
+.btn-secondary {
+    background-color: red;
+    border-color: #800000;
+}
+
+    .btn-secondary:hover {
+        background-color: #e91ec9;
+        border-color: #e91ec9;
+    }
+
+/* Media Queries for Mobile Optimization */
+@media (max-width: 768px) {
+    #content-container {
+        padding: 0 10px;
+        max-width: 100% !important;
+        max-height: 100% !important; /* Smaller height for mobile */
+    }
+
+    #current-post {
+        min-height: 50vh;
+        max-height: 80vh; /* Adjusted cap for mobile */
+        max-width: 100% !important;
+    }
+
+    .post-container .d-flex {
+        grid-template-columns: 1fr; /* Single column on mobile */
+    }
+
+    .post-container img,
+    .post-container video {
+        max-height: 50vh !important; /* Smaller height for mobile */
+        max-width: 100% !important;
+    }
+
+    .post-container h5 {
+        font-size: 1rem;
+    }
+}
+
+
+@media (height: 600px) {
+    #content-container {
+        padding: 0 10px;
+        max-width: 100% !important;
+        max-height: 100% !important; /* Smaller height for mobile */
+    }
+
+    #current-post {
+        min-height: 50vh;
+        max-height: 80vh; /* Adjusted cap for mobile */
+        max-width: 100% !important;
+    }
+
+    .post-container .d-flex {
+        grid-template-columns: 1fr; /* Single column on mobile */
+    }
+
+    .post-container img,
+    .post-container video {
+        max-height: 50vh !important; /* Smaller height for mobile */
+        max-width: 100% !important;
+    }
+
+    .post-container h5 {
+        font-size: 1rem;
+    }
+}
+
+@media (height: 800px) {
+    #content-container {
+        padding: 0 10px;
+        max-width: 100% !important;
+        max-height: 100% !important; /* Smaller height for mobile */
+    }
+
+    #current-post {
+        min-height: 50vh;
+        max-height: 80vh; /* Adjusted cap for mobile */
+        max-width: 100% !important;
+    }
+
+    .post-container .d-flex {
+        grid-template-columns: 1fr; /* Single column on mobile */
+    }
+
+    .post-container img,
+    .post-container video {
+        max-height: 50vh !important; /* Smaller height for mobile */
+        max-width: 100% !important;
+    }
+
+    .post-container h5 {
+        font-size: 1rem;
+    }
+}
+
+
+
+
+/* Optional animation */
+@keyframes pulse {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+
+
+
+/* Button Styling */
+.view-more-btn, .like-button, .flag-button {
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 0px;
+    padding: 6px 10px; /* Reduced padding for compactness */
+    transition: all 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px; /* Smaller minimum width */
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+
+.view-more-btn {
+    border: 2px solid red;
+    color: #ffffff;
+    background-color: transparent;
+}
+
+    .view-more-btn:hover {
+        background-color: #e94e17;
+        color: #ffffff;
+        border: 2px solid #e94e17;
+    }
+
+/* Compact Icon-Only or Short Text */
+.like-button {
+    border: 2px solid red;
+    color: #ffffff;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+}
+
+    .like-button.btn-primary {
+        background-color: #10f216;
+        border-color: #10f216;
+    }
+
+    .like-button:hover {
+        background-color: #10f216;
+        color: #ffffff;
+        border-color: #10f216;
+    }
+
+    .like-button.btn-primary:hover {
+        background-color: #10f216;
+    }
+
+    .like-button.glow-effect {
+        animation: like-glow 0.6s ease-in-out;
+        box-shadow: 0 0 15px 3px #ea38ba, 0 0 25px 5px #43d9e8;
+    }
+
+.flag-button {
+    border: 2px solid red;
+    color: #ffffff;
+    background-color: transparent;
+}
+
+    .flag-button:hover {
+        background-color: #fce803;
+        color: #ffffff;
+        border: 2px solid #fce803;
+    }
+
+/* Share Button */
+.share-button {
+    border: 2px solid red; /* Magenta */
+    background-color: transparent;
+    color: #ffffff;
+}
+
+    .share-button:hover {
+        background-color: #e91ec9;
+        color: #000000;
+        border: 2px solid #e91ec9; /* Magenta */
+    }
+
+
+
+
+/* Adjust buttons for mobile */
+@media (max-width: 768px) {
+    .view-more-btn, .like-button, .flag-button, .share-button, .comment-button {
+        font-size: 10px; /* Even smaller font on mobile */
+        padding: 3px 8px; /* Reduce padding further */
+        min-width: 54px !important; /* Smaller min width for mobile */
+    }
+}
+
+/* Comment Button */
+.comment-button {
+    border: 2px solid red; /* Teal */
+    background-color: transparent;
+    color: #ffffff;
+}
+
+    .comment-button:hover {
+        background-color: #43d9e8;
+        color: #000000;
+        border: 2px solid #43d9e8; /* Teal */
+    }

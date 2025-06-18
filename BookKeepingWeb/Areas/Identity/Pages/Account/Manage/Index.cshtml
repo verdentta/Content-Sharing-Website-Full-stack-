@@ -1,0 +1,74 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+<style>
+    /* Header Styling */
+    h3 {
+        color: #ff4747; /* Red color to match theme */
+        font-weight: bold;
+        font-size: 1.75rem;
+        text-shadow: 2px 2px 6px rgba(255, 71, 71, 0.3);
+        border-bottom: 2px solid rgba(255, 71, 71, 0.6);
+        padding-bottom: 5px;
+        margin-bottom: 15px;
+    }
+
+    /* Form Styling */
+    .form-floating input {
+        background-color: #1a1a1a !important;
+        border: 1px solid #444 !important;
+        color: #ffffff !important;
+    }
+
+    .form-floating label {
+        color: #bbbbbb;
+    }
+
+    .form-floating input:focus {
+        background-color: #222;
+        color: #ffffff;
+        border-color: #ff4747; /* Red accent */
+        box-shadow: 0 0 10px rgba(255, 71, 71, 0.4);
+    }
+
+    /* Save Button Styling */
+    .btn-primary {
+        background-color: #ff4747 !important;
+        border-color: #ff4747 !important;
+        color: #ffffff;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+    }
+
+        .btn-primary:hover {
+            background-color: #d63031 !important;
+            border-color: #d63031 !important;
+        }
+
+    /* Status Message */
+    .text-danger {
+        color: #ff4747 !important;
+    }
+</style>
+
+<h3>@ViewData["Title"]</h3>
+<partial name="_StatusMessage" for="StatusMessage" />
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Username" class="form-control" placeholder="Please choose your email." disabled />
+                <label asp-for="Username" class="form-label">Email</label>
+            </div>
+            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

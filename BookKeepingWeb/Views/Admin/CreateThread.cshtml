@@ -1,0 +1,57 @@
+﻿@model BookKeepingWeb.Models.ForumThread
+@using BookKeepingWeb.Models
+@{
+    ViewData["Title"] = "Create a Forum Thread";
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<style>
+    body {
+        background-color: #000000; /* Pure black background */
+        color: #f8f9fa; /* Light grey text */
+        font-family: 'Roboto', sans-serif;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: normal; /* Ensures text flows naturally */
+        max-width: 200px; /* Optional: Prevents excessive widening */
+    }
+
+</style>
+<br />
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Create a New Forum Thread</h2>
+
+    @if (TempData["AdminError"] != null)
+    {
+        <div class="alert alert-danger text-center">@TempData["AdminError"]</div>
+    }
+
+    <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">⬅ Back to Admin Panel</a>
+</div>
+
+<form asp-action="CreateThread" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Title*</label>
+        <input asp-for="Title" class="form-control" required maxlength="100">
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Description*</label>
+        <textarea asp-for="Description" class="form-control" required maxlength="2000"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Upload Image (Optional)</label>
+        <input type="file" name="ImageFile" class="form-control" accept="image/*">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Thread</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
